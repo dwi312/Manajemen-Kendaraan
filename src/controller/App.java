@@ -3,7 +3,7 @@ package controller;
 import helper.AppHelper;
 import java.util.Scanner;
 import service.UserService;
-import view.AppView;
+import view.console;
 
 
 public class App {
@@ -11,13 +11,13 @@ public class App {
     private boolean exit;
     private Scanner input = new Scanner(System.in);
 
-    private AppView view;
+    private console view;
     private UserService user = new UserService();
 
 
     public void run() {
         user.initData();
-        view = new AppView(this);
+        view = new console(this);
 
         while (!exit) {
             view.login();

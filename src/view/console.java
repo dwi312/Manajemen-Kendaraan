@@ -3,13 +3,12 @@ package view;
 import controller.App;
 import helper.AppHelper;
 
-public class AppView {
+public class console {
     private App app;
 
-    public AppView(App app) {
+    public console(App app) {
         this.app = app;
     }
-
 
     public void login() {
         AppHelper.clearScreen();
@@ -39,7 +38,6 @@ public class AppView {
         System.out.println("--------------------------------");
         System.out.print("Pilih menu: ");
     }
-
 
     public void menuUser() {
         System.out.println("1. Pilih Kendaraan");
