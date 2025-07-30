@@ -28,7 +28,12 @@ public class Mobil extends Kendaraan {
 
     @Override
     public void info() {
-        
+        System.out.println(getId() + " | " +
+                           getMerk() + " | " + 
+                           getTahun() + " | " + 
+                           getHargaSewa() + " | " + 
+                           getJumlahKursi() + " | " + 
+                           getTipeTransmisi());
     }
 
 

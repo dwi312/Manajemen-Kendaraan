@@ -18,7 +18,11 @@ public class Motor extends Kendaraan {
 
     @Override
     public void info() {
-        
+        System.out.println(getId() + " | " +
+                           getMerk() + " | " + 
+                           getTahun() + " | " + 
+                           getHargaSewa() + " | " + 
+                           getKapasitasMesin());
     }
 
 

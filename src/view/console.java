@@ -28,7 +28,7 @@ public class console {
         System.out.println();
         System.out.println("1. Lihat Daftar Kendaraan");
         System.out.println("2. Cari Kendaraan");
-        System.out.println("3. Daftar Kendaraan Sedang Disewa");
+        System.out.println("3. Daftar Kendaraan Disewa");
         System.out.println("4. Pengembalian Kendaraan");
         System.out.println("5. Riwayat Penyewaaan");
         System.out.println("6. Tambah Kendaraan");
@@ -39,8 +39,71 @@ public class console {
         System.out.print("Pilih menu: ");
     }
 
+    public void menuPilihanAdmin(int pilihan) {
+        switch (pilihan) {
+            case 1:
+                app.listKendaraan();
+                break;
+            case 2:
+                app.cariKendaraan();
+                break;
+            case 3:
+                app.kendaraanDiSewa();;
+                break;
+            case 4:
+                app.pengembalianKendaraan();
+                break;
+            case 5:
+                app.riwayatSewwa();
+                break;
+            case 6:
+                app.tambahKendaraan();
+                break;
+            case 7:
+                app.updateKendaraan();
+                break;
+            case 8:
+                app.hapusKendaraan();
+                break;
+            case 0:
+                app.isExit(pilihan);
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
+        } 
+    }
+
+    public void menuPilihKendaraan() {
+        System.out.println("\n=== SISTEM MANAJEMEN KENDARAAN ===");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.println("1. Mobil");
+        System.out.println("2. Motor");
+        System.out.println("--------------------------------");
+        System.out.print("Pilih menu: ");
+
+    }
+
+    public void pilihKendaraan(int pilihan) {
+        switch (pilihan) {
+            case 1:
+                app.listMobil();
+                break;
+            case 2:
+                app.listMotor();
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
+        }
+    }
+
     public void menuUser() {
-        System.out.println("1. Pilih Kendaraan");
+        System.out.println("\n=== APLIKASI PENYEWAAAN KENDARAAN ===");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.println("1. Daftar Sewa Kendaraan");
         System.out.println("2. Riwayat");
         System.out.println("0. Keluar");
         System.out.println("--------------------------------");
@@ -62,38 +125,6 @@ public class console {
                 System.out.println("Pilihan tidak valid. Silakan coba lagi");
                 break;
         }
-    }
-
-    public void menuPilihanAdmin(int pilihan) {
-        switch (pilihan) {
-            case 1:
-                
-                break;
-            case 2:
-                
-                break;
-            case 3:
-                
-                break;
-            case 4:
-                
-                break;
-            case 5:
-                
-                break;
-            case 6:
-                
-                break;
-            case 7:
-                
-                break;
-            case 0:
-                app.isExit(pilihan);
-                break;
-            default:
-                System.out.println("Pilihan tidak valid. Silakan coba lagi");
-                break;
-        } 
     }
     
     public void menuPilihanUser(int pilihan) {
@@ -120,6 +151,38 @@ public class console {
         System.out.println("\n=== PENYEWAAN KENDARAAN ===");
         System.out.println("--------------------------------");
         System.out.println();
+    }
+
+    public void formTambahUnit() {
+        System.out.println("\n=== REGISTRASI UNIT BARU ===");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.println("1. MOBIL");
+        System.out.println("2. MOTOR");
+        System.out.println("--------------------------------");
+        System.out.print("Pilih menu: ");
+    }
+
+    public void formPilihan(int pilihan) {
+        switch (pilihan) {
+            case 1:
+               app.formTambahMobil();
+                break;
+            case 2:
+               app.formTambahMotor();
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
+        } 
+    }
+
+    public void formUpdateUnit() {
+        System.out.println("\n=== UPDATE UNIT ===");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.print("Masukan ID Kendaraan: ");
+        app.updateKendaraan();
     }
 
 }

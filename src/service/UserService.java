@@ -10,6 +10,7 @@ import model.User;
 
 public class UserService {
     private ArrayList<User> user = new ArrayList<>();
+    private final String FILE_PATH = "data/user.txt";
 
     public User cariData(String keyword) {
         for (int i = 0; i < user.size(); i++) {
@@ -29,14 +30,14 @@ public class UserService {
     }
 
     public void initData() {
-        dataUser("data/user.txt");
+        bacaData(FILE_PATH);
     }
 
     public void saveData() {
-        saveDataUser("data/user.txt");
+        saveData(FILE_PATH);
     }
 
-    public void dataUser(String in) {
+    public void bacaData(String in) {
         user.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(in))) {
@@ -60,7 +61,7 @@ public class UserService {
         }
     }
 
-    public void saveDataUser(String in) {
+    public void saveData(String in) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(in))) {
             for (int i = 0; i < user.size(); i++) {
                 if (user.get(i) != null) {

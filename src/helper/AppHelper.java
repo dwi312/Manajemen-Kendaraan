@@ -28,6 +28,31 @@ public class AppHelper {
         return angka;
     }
 
+    public static double inputDouble(Scanner input) {
+        boolean valid = false;
+        double angka = -1;
+
+        while (!valid) {
+            try {
+                String bukanNomor = input.nextLine();
+
+                if (bukanNomor.trim().isEmpty()) {
+                    System.out.println("Input tidak boleh kosong");
+                } else {
+                    angka = Double.parseDouble(bukanNomor);
+                    valid = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Input tidak valid! harus angka");
+            } catch (Exception e) {
+                System.out.println("Terjadi kesalahan: " + e.getMessage());
+            }
+
+        }
+
+        return angka;
+    }
+
     public static String inputStr(Scanner input) {
         boolean valid = false;
         String stringInput = "";
