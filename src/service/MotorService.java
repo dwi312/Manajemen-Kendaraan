@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import model.Motor;
 
 public class MotorService {
@@ -13,25 +14,37 @@ public class MotorService {
 
     public Motor cariData(String keyword) {
         for (int i = 0; i < daftarMotor.size(); i++) {
-            if (!daftarMotor.isEmpty() && (
-                 daftarMotor.get(i).getMerk().equalsIgnoreCase(keyword) || 
-                 daftarMotor.get(i).getId().equalsIgnoreCase(keyword))) {
+            if (daftarMotor.get(i).getMerk().equalsIgnoreCase(keyword) || 
+                daftarMotor.get(i).getId().equalsIgnoreCase(keyword)) {
                 return daftarMotor.get(i);
             }
         }
         return null;
     }
 
-    public void getMotor() {
-        for (int i = 0; i < daftarMotor.size(); i++) {
-            if (!daftarMotor.isEmpty()) {
-                daftarMotor.get(i).info();
+    private String generateNewID() {
+        int maxNum = 0;
+        for (Motor m : daftarMotor) {
+            if (m.getId().startsWith("R2")) { 
+                try {
+                    int num = Integer.parseInt(m.getId().substring(2)); 
+                    if (num > maxNum) {
+                        maxNum = num;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing ID: " + m.getId());
+                }
             }
         }
+         return "R2" + String.format("%03d", maxNum + 1);
+    }
+
+    public List<Motor> getAllMotor() {
+        return new ArrayList<>(daftarMotor);
     }
 
     public void tambahMotor(String id, String merk, String tahun, double hargaSewa, String kapasitasMesin) {
-        id = "R2" + String.format("%03d", daftarMotor.size() + 1);
+        id = generateNewID();
         daftarMotor.add(new Motor(id, merk, tahun, hargaSewa, kapasitasMesin));
         saveData();
     }

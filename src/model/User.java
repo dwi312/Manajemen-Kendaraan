@@ -1,22 +1,22 @@
 package model;
 
 public class User {
-    private String idUser;
+    private String id;
     private String nama;
     private String kontak;
 
-    public User(String idUser, String nama, String kontak) {
-        this.idUser = idUser;
+    public User(String id, String nama, String kontak) {
+        this.id = id;
         this.nama = nama;
         this.kontak = kontak;
     }
 
-    public String getIdUser() {
-        return idUser;
+    public String getId() {
+        return id;
     }
 
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
+    public void setIdUser(String id) {
+        this.id = id;
     }
 
     public String getNama() {
@@ -39,7 +39,7 @@ public class User {
 
     @Override
     public String toString() {
-        return idUser + " | " + nama + " | " + " [" + kontak + "] ";
+        return id + " | " + nama + " | " + " [" + kontak + "] ";
     }
 
 

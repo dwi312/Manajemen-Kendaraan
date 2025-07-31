@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import model.Mobil;
 
 public class MobilService {
@@ -14,23 +15,37 @@ public class MobilService {
 
     public Mobil cariData(String keyword) {
         for (int i = 0; i < daftarMobil.size(); i++) {
-            if (!daftarMobil.isEmpty() && (daftarMobil.get(i).getMerk().contains(keyword) || daftarMobil.get(i).getId().contains(keyword))) {
+            if (daftarMobil.get(i).getMerk().contains(keyword) || 
+                daftarMobil.get(i).getId().contains(keyword)) {
                 return daftarMobil.get(i);
             }
         }
         return null;
     }
 
-    public void getMobil() {
-        for (int i = 0; i < daftarMobil.size(); i++) {
-            if (!daftarMobil.isEmpty()) {
-                daftarMobil.get(i).info();
+    private String generateNewID() {
+        int maxNum = 0;
+        for (Mobil m : daftarMobil) {
+            if (m.getId().startsWith("R2")) { 
+                try {
+                    int num = Integer.parseInt(m.getId().substring(2)); 
+                    if (num > maxNum) {
+                        maxNum = num;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing ID: " + m.getId());
+                }
             }
         }
+         return "R4" + String.format("%03d", maxNum + 1);
+    }
+
+    public List<Mobil> getAllMobil() {
+        return new ArrayList<>(daftarMobil);
     }
 
     public void tambahMobil(String id, String merk, String tahun, double hargaSewa, int jumlahKursi, String tipeTransmisi) {
-        id = "R4" + String.format("%03d", daftarMobil.size() + 1);
+        id = generateNewID();
         daftarMobil.add(new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi));
         saveData();
     }

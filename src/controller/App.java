@@ -8,6 +8,7 @@ import service.MobilService;
 import service.MotorService;
 import service.UserService;
 import view.Console;
+import view.UserView;
 
 
 public class App {
@@ -16,6 +17,7 @@ public class App {
     private Scanner input = new Scanner(System.in);
 
     private Console view;
+    private UserView viewUser;
     private UserService user = new UserService();
     private MobilService mobil = new MobilService();
     private MotorService motor = new MotorService();
@@ -24,6 +26,7 @@ public class App {
     public void run() {
         loadData();
         view = new Console(this);
+        viewUser = new UserView();
 
         while (!exit) {
             view.login();
@@ -79,11 +82,11 @@ public class App {
                 System.out.println("\n=== APLIKASI PENYEWAAAN KENDARAAN ===");
                 System.out.println("--------------------------------");
                 System.out.println();
-                System.out.println("ID   : " + user.cariData(data).getIdUser());
+                System.out.println("ID   : " + user.cariData(data).getId());
                 System.out.println("NAMA : " + user.cariData(data).getNama());
                 System.out.println();
                 System.out.println();
-                view.menuUser();
+                viewUser.menuUser();
                 pilihan = AppHelper.inputInt(input);
         } else {
             System.out.println("Data tidak ditemukan.");
@@ -111,12 +114,12 @@ public class App {
 
     public void listMobil() {
         AppHelper.clearScreen();
-        mobil.getMobil();
+        mobil.getAllMobil();
     }
 
     public void listMotor() {
         AppHelper.clearScreen();
-        motor.getMotor();
+        motor.getAllMotor();
     }
 
     public void cariKendaraan() {
