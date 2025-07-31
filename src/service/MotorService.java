@@ -5,38 +5,54 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import model.Motor;
 
 public class MotorService {
-    private ArrayList<Motor> motor = new ArrayList<>();
+    private ArrayList<Motor> daftarMotor = new ArrayList<>();
     private final String FILE_PATH = "data/motor.txt";
 
     public Motor cariData(String keyword) {
-        for (int i = 0; i < motor.size(); i++) {
-            if (!motor.isEmpty() && (motor.get(i).getMerk().contains(keyword) || motor.get(i).getId().contains(keyword))) {
-                return motor.get(i);
+        for (int i = 0; i < daftarMotor.size(); i++) {
+            if (!daftarMotor.isEmpty() && (
+                 daftarMotor.get(i).getMerk().equalsIgnoreCase(keyword) || 
+                 daftarMotor.get(i).getId().equalsIgnoreCase(keyword))) {
+                return daftarMotor.get(i);
             }
         }
         return null;
     }
 
     public void getMotor() {
-        for (int i = 0; i < motor.size(); i++) {
-            if (!motor.isEmpty()) {
-                motor.get(i).info();
+        for (int i = 0; i < daftarMotor.size(); i++) {
+            if (!daftarMotor.isEmpty()) {
+                daftarMotor.get(i).info();
             }
         }
     }
 
     public void tambahMotor(String id, String merk, String tahun, double hargaSewa, String kapasitasMesin) {
-        id = "R2" + String.format("%03d", motor.size() + 1);
-        motor.add(new Motor(id, merk, tahun, hargaSewa, kapasitasMesin));
+        id = "R2" + String.format("%03d", daftarMotor.size() + 1);
+        daftarMotor.add(new Motor(id, merk, tahun, hargaSewa, kapasitasMesin));
         saveData();
     }
 
-    public void updateData(String keyword) {
+    public void updateData(String id, String idBaru, String merkBaru, String tahunBaru, double hargaSewaBaru, String kapasitasMesinBaru) {
+        for (Motor motor : daftarMotor) {
+            if(motor.getId().equals(id)) {
+                motor.updateDetails(idBaru, merkBaru, tahunBaru, hargaSewaBaru, kapasitasMesinBaru);
+            }
+        }
+        saveData();
+    }
 
+    public void hapusData(String id) {
+        for (int i = 0; i < daftarMotor.size(); i++) {
+            if(daftarMotor.get(i).getId().equalsIgnoreCase(id)) {
+                daftarMotor.remove(i);
+                break;
+            }
+         }
+        saveData();
     }
 
     public void initData() {
@@ -58,8 +74,8 @@ public class MotorService {
                     String tahun = parts[2];
                     double hargaSewa = Double.parseDouble(parts[3]);
                     String kapasitasMesin = parts[4];
-                    Motor motor = new Motor(id, merk, tahun, hargaSewa, kapasitasMesin);
-                    this.motor.add(motor);
+                    Motor daftarMotor = new Motor(id, merk, tahun, hargaSewa, kapasitasMesin);
+                    this.daftarMotor.add(daftarMotor);
                 } else {
                     System.out.println("Warning: Invalid line, skipped: " + line);
                 }
@@ -72,13 +88,13 @@ public class MotorService {
 
     private void saveData(String path) {
          try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
-            for (int i = 0; i < motor.size(); i++) {
-                if (motor.get(i) != null) {
-                    writer.write(motor.get(i).getId() + "|" + 
-                                 motor.get(i).getMerk() + "|" + 
-                                 motor.get(i).getTahun() + "|" + 
-                                 motor.get(i).getHargaSewa() + "|" +
-                                 motor.get(i).getKapasitasMesin());
+            for (int i = 0; i < daftarMotor.size(); i++) {
+                if (daftarMotor.get(i) != null) {
+                    writer.write(daftarMotor.get(i).getId() + "|" + 
+                                 daftarMotor.get(i).getMerk() + "|" + 
+                                 daftarMotor.get(i).getTahun() + "|" + 
+                                 daftarMotor.get(i).getHargaSewa() + "|" +
+                                 daftarMotor.get(i).getKapasitasMesin());
                     writer.newLine();
                 }
             }

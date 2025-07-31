@@ -6,38 +6,51 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import model.Mobil;
 
 public class MobilService {
-    private ArrayList<Mobil> mobil = new ArrayList<>();
+    private ArrayList<Mobil> daftarMobil = new ArrayList<>();
     private final String FILE_PATH = "data/mobil.txt";
 
     public Mobil cariData(String keyword) {
-        for (int i = 0; i < mobil.size(); i++) {
-            if (!mobil.isEmpty() && (mobil.get(i).getMerk().contains(keyword) || mobil.get(i).getId().contains(keyword))) {
-                return mobil.get(i);
+        for (int i = 0; i < daftarMobil.size(); i++) {
+            if (!daftarMobil.isEmpty() && (daftarMobil.get(i).getMerk().contains(keyword) || daftarMobil.get(i).getId().contains(keyword))) {
+                return daftarMobil.get(i);
             }
         }
         return null;
     }
 
     public void getMobil() {
-        for (int i = 0; i < mobil.size(); i++) {
-            if (!mobil.isEmpty()) {
-                mobil.get(i).info();
+        for (int i = 0; i < daftarMobil.size(); i++) {
+            if (!daftarMobil.isEmpty()) {
+                daftarMobil.get(i).info();
             }
         }
     }
 
     public void tambahMobil(String id, String merk, String tahun, double hargaSewa, int jumlahKursi, String tipeTransmisi) {
-        id = "R4" + String.format("%03d", mobil.size() + 1);
-        mobil.add(new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi));
+        id = "R4" + String.format("%03d", daftarMobil.size() + 1);
+        daftarMobil.add(new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi));
         saveData();
     }
 
-    public void updateData(String id, String merk, String tahun, double hargaSewa, int jumlahKursi, String tipeTransmisi) {
-        mobil.add(new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi));
+    public void updateData(String id, String idBaru, String merkBaru, String tahunBaru, double hargaSewaBaru, int jumlahKursiBaru, String tipeTransmisiBaru) {
+        for (Mobil mobil : daftarMobil) {
+            if(mobil.getId().equals(id)) {
+                mobil.updateDetails(idBaru, merkBaru, tahunBaru, hargaSewaBaru, jumlahKursiBaru, tipeTransmisiBaru);
+            }
+        }
+        saveData();
+    }
+
+    public void hapusData(String id) {
+        for (int i = 0; i < daftarMobil.size(); i++) {
+            if(daftarMobil.get(i).getId().equalsIgnoreCase(id)) {
+                daftarMobil.remove(i);
+                break;
+            }
+         }
         saveData();
     }
 
@@ -50,7 +63,7 @@ public class MobilService {
     }
 
     public void bacaData(String in) {
-        mobil.clear();
+        daftarMobil.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(in))) {
             String line;
@@ -65,7 +78,7 @@ public class MobilService {
                     int jumlahKursi = Integer.parseInt(parts[4]);
                     String tipeTransmisi = parts[5];
                     Mobil mobil = new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi);
-                    this.mobil.add(mobil);
+                    this.daftarMobil.add(mobil);
                 } else {
                     System.out.println("Peringatan: Baris tidak valid, dilewati: " + line);
                 }
@@ -78,14 +91,14 @@ public class MobilService {
 
     public void saveData(String in) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(in))) {
-            for (int i = 0; i < mobil.size(); i++) {
-                if (mobil.get(i) != null) {
-                    writer.write(mobil.get(i).getId() + "|" + 
-                                 mobil.get(i).getMerk() + "|" + 
-                                 mobil.get(i).getTahun() + "|" + 
-                                 mobil.get(i).getHargaSewa() + "|" +
-                                 mobil.get(i).getJumlahKursi() + "|" +
-                                 mobil.get(i).getTipeTransmisi());
+            for (int i = 0; i < daftarMobil.size(); i++) {
+                if (daftarMobil.get(i) != null) {
+                    writer.write(daftarMobil.get(i).getId() + "|" + 
+                                 daftarMobil.get(i).getMerk() + "|" + 
+                                 daftarMobil.get(i).getTahun() + "|" + 
+                                 daftarMobil.get(i).getHargaSewa() + "|" +
+                                 daftarMobil.get(i).getJumlahKursi() + "|" +
+                                 daftarMobil.get(i).getTipeTransmisi());
                     writer.newLine();
                 }
             }

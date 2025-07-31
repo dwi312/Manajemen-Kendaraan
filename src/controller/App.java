@@ -2,10 +2,12 @@ package controller;
 
 import helper.AppHelper;
 import java.util.Scanner;
+import model.Mobil;
+import model.Motor;
 import service.MobilService;
 import service.MotorService;
 import service.UserService;
-import view.console;
+import view.Console;
 
 
 public class App {
@@ -13,7 +15,7 @@ public class App {
     private boolean exit;
     private Scanner input = new Scanner(System.in);
 
-    private console view;
+    private Console view;
     private UserService user = new UserService();
     private MobilService mobil = new MobilService();
     private MotorService motor = new MotorService();
@@ -21,7 +23,7 @@ public class App {
 
     public void run() {
         loadData();
-        view = new console(this);
+        view = new Console(this);
 
         while (!exit) {
             view.login();
@@ -35,7 +37,9 @@ public class App {
         input.close();
     }
 
-    
+     public Scanner getScanner() {
+        return input;
+    }
 
     public void masuk() {
         isAdmin();
@@ -132,17 +136,11 @@ public class App {
 
     }
 
-    public void kendaraanDiSewa() {
+    public void kendaraanDiSewa() {}
 
-    }
+    public void pengembalianKendaraan() {}
 
-    public void pengembalianKendaraan() {
-
-    }
-
-    public void riwayatSewwa() {
-
-    }
+    public void riwayatSewwa() {}
 
     public void tambahKendaraan() {
         AppHelper.clearScreen();
@@ -191,91 +189,146 @@ public class App {
     }
 
     public void updateKendaraan() {
-        String keyword = AppHelper.inputStr(input);
+        String id = AppHelper.inputStr(input);
         
-        if(mobil.cariData(keyword) != null) {
-            updateMobil(keyword);
-        } else if(motor.cariData(keyword) != null) {
-            updateMotor(keyword);
+        if(mobil.cariData(id) != null) {
+           updateMobil(id);
+        } else if(motor.cariData(id) != null) {
+            updateMotor(id);
         } else {
             System.out.println("Data tidak ditemukan.");
         }
+        AppHelper.enterToContinue(input);
         
     }
     
-    
-    
-    public void updateMobil(String keyword) {
-        System.out.println("**Kosongkan data bila tidak inggin diubah**");
-        System.out.println("ID: " + mobil.cariData(keyword).getId());
-        String id = mobil.cariData(keyword).getId();
-        System.out.print("ID Baru: ");
+
+    public void updateMotor(String idMotor) {
+        AppHelper.clearScreen();
+
+        System.out.println("\n=====     UPDATE UNIT     ======");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.println("Ditemukan: ");
+
+        Motor exMotor = motor.cariData(idMotor);
+        String id = exMotor.getId();
+        String merk = exMotor.getMerk();
+        String tahun = exMotor.getTahun();
+        double hargaSewa = exMotor.getHargaSewa();
+        String kapasitasMesin = exMotor.getKapasitasMesin();
+        
+        exMotor.info();
+
+        System.out.println("");
+        System.out.println("**Biarkan kosong jika tidak ingin mengubah.");
+        System.out.println("");
+        System.out.print("Ganti ID: ");
         String idBaru = input.nextLine();
-
-        if(!idBaru.isEmpty()) {
-            id = idBaru;
-        }
-
-        System.out.println("Merk: " + mobil.cariData(keyword).getMerk());
-        String merk = mobil.cariData(keyword).getMerk();
-        System.out.print("Merk Baru: ");
+        
+        System.out.print("Ganti Merk: ");
         String merkBaru = input.nextLine();
-
-        if(!merkBaru.isEmpty()) {
-            merk = merkBaru;
-        }
-
-        System.out.println("Tahun: " + mobil.cariData(keyword).getTahun());
-        String tahun = mobil.cariData(keyword).getTahun();
-        System.out.print("Tahun Baru: ");
+        
+        System.out.print("Ganti Tahun: ");
         String tahunBaru = input.nextLine();
-
-        if(!tahunBaru.isEmpty()) {
-            tahun = tahunBaru;
-        }
-
-        System.out.println("Harga: " + mobil.cariData(keyword).getHargaSewa());
-        double hargaSewa = mobil.cariData(keyword).getHargaSewa();
-        System.out.println("**Masukan 0 bila tidak ingin di ubah**");
-        System.out.print("Harga Sewa Baru: ");
+        
+        System.out.println("**Masukan 0 jika tidak ingin mengubah.");
+        System.out.print("Ganti Harga Sewa: ");
         double hargaSewaBaru = AppHelper.inputDouble(input);
         
-        if(hargaSewaBaru != 0) {
-            hargaSewa = hargaSewaBaru;
-        }
+        System.out.print("Ganti Kapasitas Mesin: ");
+        String kapasitasMesinBaru = input.nextLine();
         
-        System.out.println("Jumlah Kursi: " + mobil.cariData(keyword).getJumlahKursi());
-        int jumlahKursi = mobil.cariData(keyword).getJumlahKursi();
-        System.out.println("**Masukan 0 bila tidak ingin di ubah**");
-        System.out.print("Jumlah Kursi Baru: ");
-        int jumlahKursiBaru = AppHelper.inputInt(input);
+        motor.updateData(id, idBaru, merkBaru, tahunBaru, hargaSewaBaru, kapasitasMesinBaru);
+        System.out.println("Data motor berhasil diperbarui.");
+    }
 
-        if(jumlahKursiBaru != 0) {
-            jumlahKursi = jumlahKursiBaru;
-        }
+    public void updateMobil(String idMobil) {
+        AppHelper.clearScreen();
 
-        System.out.println("Tipe Transmisi: " + mobil.cariData(keyword).getTipeTransmisi());
-        String tipeTransmisi = mobil.cariData(keyword).getTipeTransmisi();
-        System.out.print("Tipe Transmisi Baru: ");
+        System.out.println("\n=====     UPDATE UNIT     ======");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.println("Ditemukan: ");
+
+        Mobil exMobil = mobil.cariData(idMobil);
+        String id = exMobil.getId();
+        String merk = exMobil.getMerk();
+        String tahun = exMobil.getTahun();
+        double hargaSewa = exMobil.getHargaSewa();
+        int jumlahKursi = exMobil.getJumlahKursi();
+        String tipeTransmisi = exMobil.getTipeTransmisi();
+
+        exMobil.info();
+
+        System.out.println("");
+        System.out.println("**Biarkan kosong jika tidak ingin mengubah.");
+        System.out.println("");
+        System.out.print("Ganti ID: ");
+        String idBaru = input.nextLine();
+        
+        System.out.print("Ganti Merk: ");
+        String merkBaru = input.nextLine();
+        
+        System.out.print("Ganti Tahun: ");
+        String tahunBaru = input.nextLine();
+        
+        System.out.println("**Masukan 0 jika tidak ingin mengubah.");
+        System.out.print("Ganti Harga Sewa: ");
+        double hargaSewaBaru = AppHelper.inputDouble(input);
+        
+        System.out.print("Ganti Jumlah Kursi: ");
+        int jumlahKursiBaru = input.nextInt();
+
+        System.out.print("Ganti Tipe Transmisi: ");
         String tipeTransmisiBaru = input.nextLine();
-        
-        if(!tipeTransmisiBaru.isEmpty()) {
-            tipeTransmisi = tipeTransmisiBaru;
+
+        mobil.updateData(id, idBaru, merkBaru, tahunBaru, hargaSewaBaru, jumlahKursiBaru, tipeTransmisiBaru);
+        System.out.println("Data motor berhasil diperbarui.");
+    }
+
+    public void hapusKendaraan(String idKendaraan) {
+        Mobil exMobil;
+        Motor exMotor;
+
+        String konfirmasi;
+
+        if(mobil.cariData(idKendaraan) != null) {
+           exMobil = mobil.cariData(idKendaraan);
+           System.out.print("Data: ");
+           exMobil.info();
+           System.out.println();
+           System.out.println(exMobil.getId() + " - " + exMobil.getMerk() + " akan dihapus? (y/n)" );
+           konfirmasi = AppHelper.inputStr(input);
+
+           if(konfirmasi.equalsIgnoreCase("y")) {
+               mobil.hapusData(exMobil.getId());
+           } else {
+               System.out.println("Data tidak dihapus.");
+               return;
+           }
+           
+        } else if(motor.cariData(idKendaraan) != null) {
+            exMotor = motor.cariData(idKendaraan);
+            System.out.print("Data: ");
+            exMotor.info();
+
+            System.out.println(exMotor.getId() + " - " + exMotor.getMerk() + " akan dihapus? (y/n)" );
+            konfirmasi = AppHelper.inputStr(input);
+
+            if(konfirmasi.equalsIgnoreCase("y")) {
+               motor.hapusData(exMotor.getId());
+           } else {
+               System.out.println("Data tidak dihapus.");
+               return;
+           }
+
+        } else {
+            System.out.println("Data tidak ditemukan.");
         }
 
-        mobil.updateData(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi);
-        System.out.println("Data berhasil diupdate.");
+        System.out.println("Data berhasil dihapus.");
         AppHelper.enterToContinue(input);
-    }
-    
-    public void updateMotor(String keyword) {
-        System.out.println("**Kosongkan data bila tidak inggin diubah**");
-        System.out.println("ID Baru: ");
-
-    }
-
-    public void hapusKendaraan() {
-
     }
 
     public void loadData() {

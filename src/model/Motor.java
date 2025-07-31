@@ -16,6 +16,31 @@ public class Motor extends Kendaraan {
         this.kapasitasMesin = kapasitasMesin;
     }
 
+    // Metode untuk memperbarui string jika tidak kosong
+    private String updateIfNotEmpty(String existingValue, String newValue) {
+        // Memeriksa apakah newValue tidak null dan tidak kosong
+        return (newValue != null && !newValue.isEmpty()) ? newValue : existingValue;
+    }
+
+    // Metode ini juga bisa diletakkan di kelas Kendaraan
+    private double updateIfNotZero(double existingValue, double newValue) {
+        // Memeriksa apakah newValue bukan 0.0
+        return newValue != 0.0 ? newValue : existingValue;
+    }
+
+    public void updateDetails(String idBaru, String merkBaru, String tahunBaru, double hargaSewaBaru, String kapasitasMesinBaru) {
+        // Menggunakan setter dari kelas Kendaraan karena propertinya private
+        setId(updateIfNotEmpty(getId(), idBaru));
+        setMerk(updateIfNotEmpty(getMerk(), merkBaru));
+        setTahun(updateIfNotEmpty(getTahun(), tahunBaru));
+        
+        // Menggunakan setter untuk hargaSewa dan metode updateIfNotZero yang sudah disesuaikan untuk double
+        setHargaSewa(updateIfNotZero(getHargaSewa(), hargaSewaBaru));
+        
+        // Untuk properti kelas Motor sendiri
+        setKapasitasMesin(updateIfNotEmpty(getKapasitasMesin(), kapasitasMesinBaru));
+    }
+
     @Override
     public void info() {
         System.out.println(getId() + " | " +

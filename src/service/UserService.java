@@ -22,7 +22,14 @@ public class UserService {
     }
 
     public void tambahUser(String idUser, String nama, String kontak) {
-        idUser = "U" + String.format("%03d", user.size() + 1);
+        String maxId = "U" + String.format("%03d", user.size() +1);
+        for (int i = 0; i < user.size(); i++) {
+            if (user.get(i).getIdUser().equalsIgnoreCase(maxId)) {
+                idUser  = "U" + String.format("%03d", i + 1);
+            } else {
+                idUser = maxId;
+            }
+        }
 
         User newUser = new User(idUser, nama, kontak);
         user.add(newUser);
@@ -61,7 +68,7 @@ public class UserService {
         }
     }
 
-    public void saveData(String in) {
+    private  void saveData(String in) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(in))) {
             for (int i = 0; i < user.size(); i++) {
                 if (user.get(i) != null) {

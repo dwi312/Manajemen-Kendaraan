@@ -3,10 +3,10 @@ package view;
 import controller.App;
 import helper.AppHelper;
 
-public class console {
+public class Console {
     private App app;
 
-    public console(App app) {
+    public Console(App app) {
         this.app = app;
     }
 
@@ -20,6 +20,23 @@ public class console {
         System.out.println("0. KELUAR");
         System.out.println("--------------------------------");
         System.out.print("Pilih menu: ");
+    }
+
+    public void auth(int pilihan) {
+        switch (pilihan) {
+            case 1:
+                app.masuk();
+                break;
+            case 2:
+                app.daftar();
+                break;
+            case 0:
+                app.isExit(pilihan);
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
+        }
     }
 
     public void menuAdmin() {
@@ -60,10 +77,12 @@ public class console {
                 app.tambahKendaraan();
                 break;
             case 7:
-                app.updateKendaraan();
+                AppHelper.clearScreen();
+                formUpdateUnit();
                 break;
             case 8:
-                app.hapusKendaraan();
+                AppHelper.clearScreen();
+                formHapusUnit();
                 break;
             case 0:
                 app.isExit(pilihan);
@@ -108,23 +127,6 @@ public class console {
         System.out.println("0. Keluar");
         System.out.println("--------------------------------");
         System.out.print("Pilih menu: ");
-    }
-
-    public void auth(int pilihan) {
-        switch (pilihan) {
-            case 1:
-                app.masuk();
-                break;
-            case 2:
-                app.daftar();
-                break;
-            case 0:
-                app.isExit(pilihan);
-                break;
-            default:
-                System.out.println("Pilihan tidak valid. Silakan coba lagi");
-                break;
-        }
     }
     
     public void menuPilihanUser(int pilihan) {
@@ -178,11 +180,21 @@ public class console {
     }
 
     public void formUpdateUnit() {
-        System.out.println("\n=== UPDATE UNIT ===");
+        System.out.println("\n=====     UPDATE UNIT     ======");
         System.out.println("--------------------------------");
         System.out.println();
         System.out.print("Masukan ID Kendaraan: ");
         app.updateKendaraan();
     }
 
+    public void formHapusUnit() {
+        System.out.println("\n=====     HAPUS UNIT     ======");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.print("Masukan ID Kendaraan: ");
+        String id = AppHelper.inputStr(app.getScanner());
+        app.hapusKendaraan(id);
+    }
+
 }
+

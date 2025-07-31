@@ -15,13 +15,27 @@ public class User {
         return idUser;
     }
 
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
+    }
+
     public String getNama() {
         return nama;
     }
     
+    public void setNama(String nama) {
+        this.nama = nama;
+    }
+
     public String getKontak() {
         return kontak;
     }
+
+    public void setKontak(String kontak) {
+        this.kontak = kontak;
+    }
+
+    
 
     @Override
     public String toString() {
