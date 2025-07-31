@@ -43,8 +43,8 @@ public class MotorService {
         return new ArrayList<>(daftarMotor);
     }
 
-    public void tambahMotor(String id, String merk, String tahun, double hargaSewa, String kapasitasMesin) {
-        id = generateNewID();
+    public void tambahMotor(String merk, String tahun, double hargaSewa, String kapasitasMesin) {
+        String id = generateNewID();
         daftarMotor.add(new Motor(id, merk, tahun, hargaSewa, kapasitasMesin));
         saveData();
     }

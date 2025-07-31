@@ -1,6 +1,7 @@
 package view;
 
 import controller.App;
+import helper.AppHelper;
 
 public class UserView {
     private App app = new App();
@@ -34,6 +35,33 @@ public class UserView {
                 System.out.println("Pilihan tidak valid. Silakan coba lagi");
                 break;
         } 
+    }
+
+    public void listDataUser() {
+        AppHelper.clearScreen();
+        System.out.println("====================      LIST DATA PENYEWA      ===================");
+        System.out.println();
+        System.out.println("--------------------------------------------------------------------");
+        System.out.printf("%-2s | %-5s | %-30s | %-20s |\n",
+                         "No", "ID", "Nama", "Kontak");
+        System.out.println("--------------------------------------------------------------------");
+    }
+
+    public void formUpdateUser() {
+        System.out.println("\n=====     UPDATE DATA PENYEWA     ======");
+        System.out.println("----------------------------------------");
+        System.out.println();
+        System.out.print("Masukan ID: ");
+        
+    }
+
+    public void formHapusUser() {
+        System.out.println("\n=====     HAPUS DATA PENYEWA     ======");
+        System.out.println("---------------------------------------");
+        System.out.println();
+        System.out.print("Masukan ID: ");
+        String id = AppHelper.inputStr(app.getScanner());
+        app.hapusUser(id);
     }
 
 }

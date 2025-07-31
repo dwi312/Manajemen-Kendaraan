@@ -15,8 +15,7 @@ public class UserService {
 
     public User cariData(String keyword) {
         for (int i = 0; i < daftarUser.size(); i++) {
-            if (daftarUser.get(i).getNama().contains(keyword) || 
-                daftarUser.get(i).getId().contains(keyword)) {
+            if (daftarUser.get(i).getId().equalsIgnoreCase(keyword)) {
                 return daftarUser.get(i);
             }
         }
@@ -47,10 +46,19 @@ public class UserService {
 
     public void tambahUser(String id, String nama, String kontak) {
         id = generateNewID();
+        daftarUser.add(new User(id, nama, kontak));
+        saveData();
+    }
 
-        User newUser = new User(id, nama, kontak);
-        daftarUser.add(newUser);
-        System.out.println("User berhasil ditambahkan");
+    public void hapusData(String id) {
+        for (int i = 0; i < daftarUser.size(); i++) {
+            if(daftarUser.get(i).getId().equalsIgnoreCase(id)) {
+                daftarUser.remove(i);
+                break;
+            }
+         }
+        saveData();
+
     }
 
     public void initData() {

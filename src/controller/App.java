@@ -1,9 +1,11 @@
 package controller;
 
 import helper.AppHelper;
+import java.util.List;
 import java.util.Scanner;
 import model.Mobil;
 import model.Motor;
+import model.User;
 import service.MobilService;
 import service.MotorService;
 import service.UserService;
@@ -48,23 +50,6 @@ public class App {
         isAdmin();
     }
     
-    public void daftar() {
-        AppHelper.clearScreen();
-        view.daftarBaru();
-        System.out.print("Masukan Nama:");
-        String nama = AppHelper.inputStr(input);
-
-        System.out.print("Masukan Kontak:");
-        String kontak = AppHelper.inputStr(input);
-        
-        String idUser = "";
-        
-        user.tambahUser(idUser, nama, kontak);
-        user.saveData();
-        AppHelper.enterToContinue(input);
-
-    }
-    
     private void isAdmin() {
         System.out.print("Masukan ID / Nama: ");
         String data = AppHelper.inputStr(input);
@@ -103,23 +88,99 @@ public class App {
         return false;
     }
 
+    public void listUser() {
+        viewUser.listDataUser();
+        List<User> getDataUser = user.getAllUser();
+        int no = 1;
+
+        for(int i = 0; i < getDataUser.size(); i++) {
+            System.out.printf("%-2s | %-5s | %-30s | %-20s |\n",
+                        no++,
+                        getDataUser.get(i).getId(),
+                        getDataUser.get(i).getNama(),
+                        getDataUser.get(i).getKontak());
+        }
+        System.out.println("--------------------------------------------------------------------");
+        System.out.println();
+        view.pilhanData();
+        pilihan = AppHelper.inputInt(input);
+
+        switch (pilihan) {
+            case 1: newUser(); break;
+            case 2: AppHelper.clearScreen(); viewUser.formUpdateUser(); break;
+            case 3: AppHelper.clearScreen(); viewUser.formHapusUser(); break;
+            case 4: break;
+            default: System.out.println("Pilihan tidak valid. Silakan coba lagi"); break;
+
+        }
+    }
+
     public void listKendaraan() {
         AppHelper.clearScreen();
         view.menuPilihKendaraan();
         pilihan = AppHelper.inputInt(input);
         view.pilihKendaraan(pilihan);
         AppHelper.enterToContinue(input);
+        
     }
 
 
     public void listMobil() {
-        AppHelper.clearScreen();
-        mobil.getAllMobil();
+        List<Mobil> getDataMobil = mobil.getAllMobil();
+        int no = 1;
+
+        for(int i = 0; i < getDataMobil.size(); i++) {
+            System.out.printf("%-2d | %-5s | %-10s | %-10s | %-10s | %-13s | %-13s |\n",
+                        no++,
+                        getDataMobil.get(i).getId(),
+                        getDataMobil.get(i).getMerk(),
+                        getDataMobil.get(i).getTahun(),
+                        getDataMobil.get(i).getHargaSewa(),
+                        getDataMobil.get(i).getJumlahKursi(),
+                        getDataMobil.get(i).getTipeTransmisi());
+        }
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.println();
+        view.pilhanData();
+        pilihan = AppHelper.inputInt(input);
+
+        switch (pilihan) {
+            case 1: formTambahMobil();  break;
+            case 2: AppHelper.clearScreen(); view.formUpdateUnit(); break;
+            case 3: AppHelper.clearScreen(); view.formHapusUnit(); break;
+            case 4: break;
+            default: System.out.println("Pilihan tidak valid. Silakan coba lagi"); break;
+
+        }
+
     }
 
     public void listMotor() {
-        AppHelper.clearScreen();
-        motor.getAllMotor();
+        List<Motor> getDataMotor = motor.getAllMotor();
+        int no = 1;
+
+        for(int i = 0; i < getDataMotor.size(); i++) {
+            System.out.printf("%-2d | %-5s | %-10s | %-10s | %-10s | %-15s |\n",
+                        no++,
+                        getDataMotor.get(i).getId(),
+                        getDataMotor.get(i).getMerk(),
+                        getDataMotor.get(i).getTahun(),
+                        getDataMotor.get(i).getHargaSewa(),
+                        getDataMotor.get(i).getKapasitasMesin());
+        }
+        System.out.println("---------------------------------------------------------------------");
+        System.out.println();
+        view.pilhanData();
+        pilihan = AppHelper.inputInt(input);
+
+        switch (pilihan) {
+            case 1: formTambahMotor();  break;
+            case 2: AppHelper.clearScreen(); view.formUpdateUnit(); break;
+            case 3: AppHelper.clearScreen(); view.formHapusUnit(); break;
+            case 4: break;
+            default: System.out.println("Pilihan tidak valid. Silakan coba lagi"); break;
+        }
+
     }
 
     public void cariKendaraan() {
@@ -145,6 +206,25 @@ public class App {
 
     public void riwayatSewwa() {}
 
+    public void newUser() {
+        AppHelper.clearScreen();
+        System.out.println("\n======== DATFAR USER BARU ========");
+        System.out.println("---------------------------------");
+        System.out.println();
+
+        System.out.print("Masukan Nama:");
+        String nama = AppHelper.inputStr(input);
+
+        System.out.print("Masukan Kontak:");
+        String kontak = AppHelper.inputStr(input);
+        
+        String idUser = "";
+        
+        user.tambahUser(idUser, nama, kontak);
+        System.out.println("User Baru berhasil ditambahkan.");
+        AppHelper.enterToContinue(input);
+    }
+
     public void tambahKendaraan() {
         AppHelper.clearScreen();
         view.formTambahUnit();
@@ -154,7 +234,8 @@ public class App {
     }
 
     public void formTambahMobil() {
-        System.out.println("\n=== REGISTRASI UNIT MOBIL ===");
+        AppHelper.clearScreen();
+        System.out.println("\n=== TAMBAH UNIT MOBIL ===");
         System.out.println("--------------------------------");
         System.out.println();
         String id = null;
@@ -174,19 +255,24 @@ public class App {
     }
     
     public void formTambahMotor() {
-        System.out.println("\n=== REGISTRASI UNIT MOTOR ===");
+        AppHelper.clearScreen();
+        System.out.println("\n=== TAMBAH UNIT MOTOR ===");
         System.out.println("--------------------------------");
         System.out.println();
-        String id = null;
+        
         System.out.print("Merk Motor: ");
         String merk = AppHelper.inputStr(input);
+        
         System.out.print("Tahun Motor: ");
         String tahun = AppHelper.inputStr(input);
+        
         System.out.print("Harga Sewa: ");
         double hargaSewa = AppHelper.inputDouble(input);
+        
         System.out.print("Kapasitas Mesin: ");
         String kapasitasMesin = AppHelper.inputStr(input);
-        motor.tambahMotor("", merk, tahun, hargaSewa, kapasitasMesin);
+        
+        motor.tambahMotor(merk, tahun, hargaSewa, kapasitasMesin);
         System.out.println("Motor berhasil ditambahkan.");
 
     }
@@ -303,9 +389,10 @@ public class App {
            System.out.println();
            System.out.println(exMobil.getId() + " - " + exMobil.getMerk() + " akan dihapus? (y/n)" );
            konfirmasi = AppHelper.inputStr(input);
-
+           
            if(konfirmasi.equalsIgnoreCase("y")) {
                mobil.hapusData(exMobil.getId());
+               System.out.println("Data berhasil dihapus.");
            } else {
                System.out.println("Data tidak dihapus.");
                return;
@@ -321,6 +408,7 @@ public class App {
 
             if(konfirmasi.equalsIgnoreCase("y")) {
                motor.hapusData(exMotor.getId());
+               System.out.println("Data berhasil dihapus.");
            } else {
                System.out.println("Data tidak dihapus.");
                return;
@@ -330,8 +418,36 @@ public class App {
             System.out.println("Data tidak ditemukan.");
         }
 
-        System.out.println("Data berhasil dihapus.");
         AppHelper.enterToContinue(input);
+    }
+
+    public void hapusUser(String idUser) {
+        User exUser;
+
+        String konfirmasi;
+
+        if(user.cariData(idUser) != null) {
+            exUser = user.cariData(idUser);
+            System.out.print("Data: ");
+            exUser.toString();
+
+            System.out.println();
+            System.out.println(exUser.getId() + " - " + exUser.getNama() + " akan dihapus? (y/n)" );
+            konfirmasi = AppHelper.inputStr(input);
+
+            if(konfirmasi.equalsIgnoreCase("y")) {
+                user.hapusData(exUser.getId());
+                System.out.println("Data berhasil dihapus.");
+            } else {
+                System.out.println("Data tidak dihapus.");
+                return;
+            }
+        } else {
+             System.out.println("Data tidak ditemukan.");
+        }
+
+        AppHelper.enterToContinue(input);
+
     }
 
     public void loadData() {

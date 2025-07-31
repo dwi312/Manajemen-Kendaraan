@@ -28,7 +28,7 @@ public class Console {
                 app.masuk();
                 break;
             case 2:
-                app.daftar();
+                app.newUser();
                 break;
             case 0:
                 app.isExit(pilihan);
@@ -39,62 +39,8 @@ public class Console {
         }
     }
 
-    public void menuAdmin() {
-        System.out.println("\n=== SISTEM MANAJEMEN KENDARAAN ===");
-        System.out.println("--------------------------------");
-        System.out.println();
-        System.out.println("1. Lihat Daftar Kendaraan");
-        System.out.println("2. Cari Kendaraan");
-        System.out.println("3. Daftar Kendaraan Disewa");
-        System.out.println("4. Pengembalian Kendaraan");
-        System.out.println("5. Riwayat Penyewaaan");
-        System.out.println("6. Tambah Kendaraan");
-        System.out.println("7. Ubah Data Kendaraan");
-        System.out.println("8. Hapus Kendaraan");
-        System.out.println("0. Keluar");
-        System.out.println("--------------------------------");
-        System.out.print("Pilih menu: ");
-    }
-
-    public void menuPilihanAdmin(int pilihan) {
-        switch (pilihan) {
-            case 1:
-                app.listKendaraan();
-                break;
-            case 2:
-                app.cariKendaraan();
-                break;
-            case 3:
-                app.kendaraanDiSewa();;
-                break;
-            case 4:
-                app.pengembalianKendaraan();
-                break;
-            case 5:
-                app.riwayatSewwa();
-                break;
-            case 6:
-                app.tambahKendaraan();
-                break;
-            case 7:
-                AppHelper.clearScreen();
-                formUpdateUnit();
-                break;
-            case 8:
-                AppHelper.clearScreen();
-                formHapusUnit();
-                break;
-            case 0:
-                app.isExit(pilihan);
-                break;
-            default:
-                System.out.println("Pilihan tidak valid. Silakan coba lagi");
-                break;
-        } 
-    }
-
     public void menuPilihKendaraan() {
-        System.out.println("\n=== SISTEM MANAJEMEN KENDARAAN ===");
+        System.out.println("\n=== DAFTAR KENDARAAN ===");
         System.out.println("--------------------------------");
         System.out.println();
         System.out.println("1. Mobil");
@@ -107,21 +53,17 @@ public class Console {
     public void pilihKendaraan(int pilihan) {
         switch (pilihan) {
             case 1:
+                listDataMobil();
                 app.listMobil();
                 break;
             case 2:
+                listDataMotor();
                 app.listMotor();
                 break;
             default:
                 System.out.println("Pilihan tidak valid. Silakan coba lagi");
                 break;
         }
-    }
-
-    public void daftarBaru() {
-        System.out.println("\n=== PENYEWAAN KENDARAAN ===");
-        System.out.println("--------------------------------");
-        System.out.println();
     }
 
     public void formTambahUnit() {
@@ -163,6 +105,85 @@ public class Console {
         System.out.print("Masukan ID Kendaraan: ");
         String id = AppHelper.inputStr(app.getScanner());
         app.hapusKendaraan(id);
+    }
+
+    public void menuAdmin() {
+        System.out.println("\n=== SISTEM MANAJEMEN KENDARAAN ===");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.println("1. Data Kendaraan");
+        System.out.println("2. Data Penyewa");
+        System.out.println("3. Kendaraan Disewa");
+        System.out.println("4. Pengembalian Kendaraan");
+        System.out.println("5. Riwayat Penyewaaan");
+        System.out.println("0. Keluar");
+        System.out.println("--------------------------------");
+        System.out.print("Pilih menu: ");
+    }
+
+    public void menuPilihanAdmin(int pilihan) {
+        switch (pilihan) {
+            case 1:
+                app.listKendaraan();
+                break;
+            case 2:
+                app.listUser();
+                break;
+            case 3:
+          
+                break;
+            case 4:
+                app.pengembalianKendaraan();
+                break;
+            case 5:
+                app.riwayatSewwa();
+                break;
+            case 0:
+                app.isExit(pilihan);
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
+        } 
+    }
+
+    public void menuDataKendaraan() {
+        System.out.println("\n=== DATA KENDARAAN ===");
+        System.out.println("--------------------------------");
+        System.out.println();
+        System.out.println("1. Mobil");
+        System.out.println("2. Motor");
+        System.out.println("--------------------------------");
+        System.out.print("Pilih menu: ");
+    }
+
+    public void listDataMobil() {
+        AppHelper.clearScreen();
+        System.out.println("\n====================             LIST DATA MOBIL               ====================");
+        System.out.println();
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.printf("%-2s | %-5s | %-10s | %-10s | %-10s | %-13s | %-13s |\n",
+                         "No", "ID", "Merk", "Tahun", "Harga Sewa", "Jumlah Kursi", "Transmisi");
+        System.out.println("-----------------------------------------------------------------------------------");
+    }
+
+    public void listDataMotor() {
+        AppHelper.clearScreen();
+        System.out.println("\n====================       LIST DATA MOTOR       ====================");
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------");
+        System.out.printf("%-2s | %-5s | %-10s | %-10s | %-10s | %-15s |\n",
+                         "No", "ID", "Merk", "Tahun", "Harga Sewa", "Kapasitas Mesin");
+        System.out.println("---------------------------------------------------------------------");
+    }
+
+    public void pilhanData() {
+        System.out.println("1. Menambahkan Data");
+        System.out.println("2. Upadate Data");
+        System.out.println("3. Hapus Data");
+        System.out.println("4. Kembali ke menu");
+        System.out.print("Pilih: ");
+
     }
 
 }
