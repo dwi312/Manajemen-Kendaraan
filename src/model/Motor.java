@@ -2,10 +2,12 @@ package model;
 
 public class Motor extends Kendaraan {
     private String kapasitasMesin;
+    private StatusSewa statusSewa;
 
-    public Motor(String id, String merk, String tahun, double hargaSewa, String kapasitasMesin) {
+    public Motor(String id, String merk, String tahun, double hargaSewa, String kapasitasMesin, StatusSewa statusSewa) {
         super(id, merk, tahun, hargaSewa);
         this.kapasitasMesin = kapasitasMesin;
+        this.statusSewa = statusSewa;
     }
 
     public String getKapasitasMesin() {
@@ -14,6 +16,14 @@ public class Motor extends Kendaraan {
 
     public void setKapasitasMesin(String kapasitasMesin) {
         this.kapasitasMesin = kapasitasMesin;
+    }
+
+    public StatusSewa getStatusSewa() {
+        return statusSewa;
+    }
+
+    public void setStatusSewa(StatusSewa statusSewa) {
+        this.statusSewa = statusSewa;
     }
 
     // Metode untuk memperbarui string jika tidak kosong

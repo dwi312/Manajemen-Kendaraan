@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Motor;
+import model.StatusSewa;
 
 public class MotorService {
     private ArrayList<Motor> daftarMotor = new ArrayList<>();
@@ -43,10 +44,45 @@ public class MotorService {
         return new ArrayList<>(daftarMotor);
     }
 
+    public Motor getMotor(String idMotor) {
+        for(int i = 0; i < daftarMotor.size(); i++) {
+            if(daftarMotor.get(i).getId().equalsIgnoreCase(idMotor)) {
+                return daftarMotor.get(i);
+            }
+        }
+        return null;
+    }
+
     public void tambahMotor(String merk, String tahun, double hargaSewa, String kapasitasMesin) {
         String id = generateNewID();
-        daftarMotor.add(new Motor(id, merk, tahun, hargaSewa, kapasitasMesin));
+        daftarMotor.add(new Motor(id, merk, tahun, hargaSewa, kapasitasMesin, StatusSewa.TERSEDIA));
         saveData();
+    }
+
+    public String sewaMotor(int index) {
+         int[] indexMap = new int[daftarMotor.size()];
+        int count = 0;
+
+        for (int i = 0; i < daftarMotor.size(); i++) {
+            if(daftarMotor.get(i).getStatusSewa() == StatusSewa.TERSEDIA) {
+                indexMap[count] = i;
+                count++;
+            }
+        }
+
+        while (true) {
+            if(index >= 1 && index <= count) {
+                int numIndex = indexMap[index - 1];
+                Motor unitMotor = daftarMotor.get(numIndex);
+                unitMotor.setStatusSewa(StatusSewa.DISEWA);        
+                saveData();
+                return unitMotor.getId();
+            } else {
+                System.out.println("Pilihan tidak valid. Silakan coba lagi.");
+                return "";
+            }
+        }
+    
     }
 
     public void updateData(String id, String idBaru, String merkBaru, String tahunBaru, double hargaSewaBaru, String kapasitasMesinBaru) {
@@ -81,13 +117,14 @@ public class MotorService {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                if (parts.length != 0) {
+                if (parts.length == 6) {
                     String id = parts[0];
                     String merk = parts[1];
                     String tahun = parts[2];
                     double hargaSewa = Double.parseDouble(parts[3]);
                     String kapasitasMesin = parts[4];
-                    Motor daftarMotor = new Motor(id, merk, tahun, hargaSewa, kapasitasMesin);
+                    StatusSewa statusSewa = StatusSewa.valueOf(parts[5].toUpperCase());
+                    Motor daftarMotor = new Motor(id, merk, tahun, hargaSewa, kapasitasMesin, statusSewa);
                     this.daftarMotor.add(daftarMotor);
                 } else {
                     System.out.println("Warning: Invalid line, skipped: " + line);
@@ -107,7 +144,8 @@ public class MotorService {
                                  daftarMotor.get(i).getMerk() + "|" + 
                                  daftarMotor.get(i).getTahun() + "|" + 
                                  daftarMotor.get(i).getHargaSewa() + "|" +
-                                 daftarMotor.get(i).getKapasitasMesin());
+                                 daftarMotor.get(i).getKapasitasMesin() + "|" +
+                                 daftarMotor.get(i).getStatusSewa());
                     writer.newLine();
                 }
             }

@@ -1,7 +1,6 @@
 package model;
 
 public enum  StatusSewa {
-    MAINTENCE("Maintence"),
     TERSEDIA("Tersedia"),
     DISEWA("Disewa");
 

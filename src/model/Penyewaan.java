@@ -4,18 +4,18 @@ import java.time.LocalDate;
 
 public class Penyewaan {
     private String idSewa;
-    private String idKendaraan;
     private String idUser;
+    private String idKendaraan;
     private LocalDate tglSewa;
     private LocalDate tglKembali;
     private double totalHarga;
     private StatusSewa statusSewa;
 
-    public Penyewaan(String idSewa, String idKendaraan, String idUser, LocalDate tglSewa, LocalDate tglKembali,
+    public Penyewaan(String idSewa, String idUser, String idKendaraan, LocalDate tglSewa, LocalDate tglKembali,
                      double totalHarga, StatusSewa statusSewa) {
         this.idSewa = idSewa;
-        this.idKendaraan = idKendaraan;
         this.idUser = idUser;
+        this.idKendaraan = idKendaraan;
         this.tglSewa = tglSewa;
         this.tglKembali = tglKembali;
         this.totalHarga = totalHarga;

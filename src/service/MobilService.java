@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Mobil;
+import model.StatusSewa;
 
 public class MobilService {
     private ArrayList<Mobil> daftarMobil = new ArrayList<>();
@@ -15,9 +16,10 @@ public class MobilService {
 
     public Mobil cariData(String keyword) {
         for (int i = 0; i < daftarMobil.size(); i++) {
-            if (daftarMobil.get(i).getMerk().contains(keyword) || 
-                daftarMobil.get(i).getId().contains(keyword)) {
+            if (daftarMobil.get(i).getId().contains(keyword)) {
                 return daftarMobil.get(i);
+            } else {
+                return null;
             }
         }
         return null;
@@ -26,7 +28,7 @@ public class MobilService {
     private String generateNewID() {
         int maxNum = 0;
         for (Mobil m : daftarMobil) {
-            if (m.getId().startsWith("R2")) { 
+            if (m.getId().startsWith("R4")) { 
                 try {
                     int num = Integer.parseInt(m.getId().substring(2)); 
                     if (num > maxNum) {
@@ -44,19 +46,54 @@ public class MobilService {
         return new ArrayList<>(daftarMobil);
     }
 
+    public Mobil getMobil(String idMobil) {
+        for(int i = 0; i < daftarMobil.size(); i++) {
+            if(daftarMobil.get(i).getId().equalsIgnoreCase(idMobil)) {
+                return daftarMobil.get(i);
+            }
+        }
+        return null;
+    }
+
     public void tambahMobil(String id, String merk, String tahun, double hargaSewa, int jumlahKursi, String tipeTransmisi) {
         id = generateNewID();
-        daftarMobil.add(new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi));
+        daftarMobil.add(new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi, StatusSewa.TERSEDIA));
         saveData();
+    }
+
+    public String sewaMobil(int index) {
+        int[] indexMap = new int[daftarMobil.size()];
+        int count = 0;
+
+        for (int i = 0; i < daftarMobil.size(); i++) {
+            if(daftarMobil.get(i).getStatusSewa() == StatusSewa.TERSEDIA) {
+                indexMap[count] = i;
+                count++;
+            }
+        }
+
+        while (true) {
+            if(index >= 1 && index <= count) {
+                int numIndex = indexMap[index - 1];
+                Mobil unitMobil = daftarMobil.get(numIndex);
+                unitMobil.setStatusSewa(StatusSewa.DISEWA);        
+                saveData();
+                return unitMobil.getId();
+            } else {
+                System.out.println("Pilihan tidak valid. Silakan coba lagi.");
+                return "";
+            }
+        }
     }
 
     public void updateData(String id, String idBaru, String merkBaru, String tahunBaru, double hargaSewaBaru, int jumlahKursiBaru, String tipeTransmisiBaru) {
         for (Mobil mobil : daftarMobil) {
             if(mobil.getId().equals(id)) {
                 mobil.updateDetails(idBaru, merkBaru, tahunBaru, hargaSewaBaru, jumlahKursiBaru, tipeTransmisiBaru);
+                saveData();
+                break;
             }
         }
-        saveData();
     }
 
     public void hapusData(String id) {
@@ -85,14 +122,15 @@ public class MobilService {
 
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                if(parts.length != 0) {
+                if(parts.length == 7) {
                     String id = parts[0];
                     String merk = parts[1];
                     String tahun = parts[2];
                     double hargaSewa = Double.parseDouble(parts[3]);
                     int jumlahKursi = Integer.parseInt(parts[4]);
                     String tipeTransmisi = parts[5];
-                    Mobil mobil = new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi);
+                    StatusSewa statusSewa = StatusSewa.valueOf(parts[6].toUpperCase());
+                    Mobil mobil = new Mobil(id, merk, tahun, hargaSewa, jumlahKursi, tipeTransmisi, statusSewa);
                     this.daftarMobil.add(mobil);
                 } else {
                     System.out.println("Peringatan: Baris tidak valid, dilewati: " + line);
@@ -113,7 +151,8 @@ public class MobilService {
                                  daftarMobil.get(i).getTahun() + "|" + 
                                  daftarMobil.get(i).getHargaSewa() + "|" +
                                  daftarMobil.get(i).getJumlahKursi() + "|" +
-                                 daftarMobil.get(i).getTipeTransmisi());
+                                 daftarMobil.get(i).getTipeTransmisi() + "|" +
+                                 daftarMobil.get(i).getStatusSewa());
                     writer.newLine();
                 }
             }

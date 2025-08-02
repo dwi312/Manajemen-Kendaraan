@@ -54,11 +54,34 @@ public class Console {
         switch (pilihan) {
             case 1:
                 listDataMobil();
-                app.listMobil();
+                if (app.getIdUser() != null) {
+                    app.mobilTersedia();
+                } else {
+                    app.listMobil();
+                }
                 break;
             case 2:
                 listDataMotor();
-                app.listMotor();
+                if (app.getIdUser() != null) {
+                    app.motorTersedia();
+                } else {
+                    app.listMotor();
+                }
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
+        }
+    }
+
+    public void pilihUnitTersedia(int pilihan) {
+        switch (pilihan) {
+            case 1:
+            
+             
+                break;
+            case 2:
+             
                 break;
             default:
                 System.out.println("Pilihan tidak valid. Silakan coba lagi");
@@ -130,13 +153,13 @@ public class Console {
                 app.listUser();
                 break;
             case 3:
-          
+                app.cekUnitDisewa();
                 break;
             case 4:
-                app.pengembalianKendaraan();
+                pengembalian();
                 break;
             case 5:
-                app.riwayatSewwa();
+                
                 break;
             case 0:
                 app.isExit(pilihan);
@@ -177,6 +200,17 @@ public class Console {
         System.out.println("---------------------------------------------------------------------");
     }
 
+    public void listUnitDisewa() {
+        AppHelper.clearScreen();
+        System.out.println("\n================         LIST UNIT YANG SEDANG DISEWA        ================");
+        System.out.println();
+        System.out.println("-----------------------------------------------------------------------------");
+        System.out.printf("| %-2s | %-5s | %-5s | %-10s | %-5s | %-13s | %-13s |\n",
+        "No", "TRX", "UNIT", "MERK", "ID USER", "TGL SEWA", "TGL KEMBALI");
+        System.out.println("-----------------------------------------------------------------------------");
+        app.listKendaraanDisewa();
+    }
+
     public void pilhanData() {
         System.out.println("1. Menambahkan Data");
         System.out.println("2. Upadate Data");
@@ -184,6 +218,17 @@ public class Console {
         System.out.println("4. Kembali ke menu");
         System.out.print("Pilih: ");
 
+    }
+
+    public void pengembalian() {
+        AppHelper.clearScreen();
+        System.out.println("\n=================            PENGEMBALIAN UNIT SEWA            =================");
+        System.out.println();
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.printf("| %-2s | %-2s | %-15s | %-10s | %-10s | %-17s |\n",
+        "NO", "NO SEWA", "NAMA", "MERK", "JENIS", "HARGA SEWA");
+        System.out.println("--------------------------------------------------------------------------------");
+        app.pengembalianUnit();
     }
 
 }

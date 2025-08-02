@@ -10,12 +10,19 @@ import java.util.List;
 import model.User;
 
 public class UserService {
+
     private ArrayList<User> daftarUser = new ArrayList<>();
     private final String FILE_PATH = "data/user.txt";
 
     public User cariData(String keyword) {
+        // pengecekan daftar user
+        // System.out.println("Daftar user: " + daftarUser.size());
         for (int i = 0; i < daftarUser.size(); i++) {
-            if (daftarUser.get(i).getId().equalsIgnoreCase(keyword)) {
+            // pengecekan data yg ditemukan dengan pencarian
+            // System.out.println("Data user: " + daftarUser.get(i).getId()+ " pencarian: " + keyword);
+            if (daftarUser.get(i).getId().equalsIgnoreCase(keyword) || daftarUser.get(i).getNama().equalsIgnoreCase(keyword)) {
+                // Cetak data bila ditemukan
+                // System.out.println("Ditemukan data user: " + daftarUser.get(i).getId());
                 return daftarUser.get(i);
             }
         }
@@ -25,9 +32,9 @@ public class UserService {
     private String generateNewID() {
         int maxNum = 0;
         for (User u : daftarUser) {
-            if (u.getId().startsWith("U")) { 
+            if (u.getId().startsWith("U")) {
                 try {
-                    int num = Integer.parseInt(u.getId().substring(2)); 
+                    int num = Integer.parseInt(u.getId().substring(2));
                     if (num > maxNum) {
                         maxNum = num;
                     }
@@ -36,7 +43,7 @@ public class UserService {
                 }
             }
         }
-         return "U" + String.format("%03d", maxNum + 1);
+        return "U" + String.format("%03d", maxNum + 1);
 
     }
 
@@ -52,11 +59,11 @@ public class UserService {
 
     public void hapusData(String id) {
         for (int i = 0; i < daftarUser.size(); i++) {
-            if(daftarUser.get(i).getId().equalsIgnoreCase(id)) {
+            if (daftarUser.get(i).getId().equalsIgnoreCase(id)) {
                 daftarUser.remove(i);
                 break;
             }
-         }
+        }
         saveData();
 
     }
@@ -77,12 +84,12 @@ public class UserService {
 
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                if(parts.length != 0) {
+                if (parts.length != 0) {
                     String idUser = parts[0];
                     String nama = parts[1];
                     String kontak = parts[2];
                     User user = new User(idUser, nama, kontak);
-                    this.daftarUser.add(user);
+                    daftarUser.add(user);
                 } else {
                     System.out.println("Peringatan: Baris tidak valid, dilewati: " + line);
                 }
@@ -93,13 +100,13 @@ public class UserService {
         }
     }
 
-    private  void saveData(String in) {
+    private void saveData(String in) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(in))) {
             for (int i = 0; i < daftarUser.size(); i++) {
                 if (daftarUser.get(i) != null) {
-                    writer.write(daftarUser.get(i).getId() + "|" + 
-                                 daftarUser.get(i).getNama() + "|" + 
-                                 daftarUser.get(i).getKontak());
+                    writer.write(daftarUser.get(i).getId() + "|"
+                            + daftarUser.get(i).getNama() + "|"
+                            + daftarUser.get(i).getKontak());
                     writer.newLine();
                 }
             }
@@ -108,12 +115,5 @@ public class UserService {
             System.out.println("Gagal menyimpan data user: " + e.getMessage());
         }
     }
-
-    
-
-
-
-
-
 
 }

@@ -3,11 +3,13 @@ package model;
 public class Mobil extends Kendaraan {
     private int jumlahKursi;
     private String tipeTransmisi;
+    private StatusSewa statusSewa;
 
-    public Mobil(String id, String merk, String tahun, double hargaSewa, int jumlahKursi, String tipeTransmisi) {
+    public Mobil(String id, String merk, String tahun, double hargaSewa, int jumlahKursi, String tipeTransmisi, StatusSewa statusSewa) {
         super(id, merk, tahun, hargaSewa);
         this.jumlahKursi = jumlahKursi;
         this.tipeTransmisi = tipeTransmisi;
+        this.statusSewa = statusSewa;
     }
 
     public int getJumlahKursi() {
@@ -24,6 +26,14 @@ public class Mobil extends Kendaraan {
 
     public void setTipeTransmisi(String tipeTransmisi) {
         this.tipeTransmisi = tipeTransmisi;
+    }
+
+    public StatusSewa getStatusSewa() {
+        return statusSewa;
+    }
+
+    public void setStatusSewa(StatusSewa statusSewa) {
+        this.statusSewa = statusSewa;
     }
 
     // Metode untuk memperbarui string jika tidak kosong
@@ -52,7 +62,7 @@ public class Mobil extends Kendaraan {
         
         setHargaSewa(updateIfNotZero(getHargaSewa(), hargaSewaBaru));
         
-        setJumlahKursi(updateIfNotInt(getJumlahKursi(), jumlahKursi));
+        setJumlahKursi(updateIfNotInt(getJumlahKursi(), jumlahKursiBaru));
         setTipeTransmisi(updateIfNotEmpty(getTipeTransmisi(), tipeTransmisiBaru));
     }
 
@@ -63,7 +73,8 @@ public class Mobil extends Kendaraan {
                            getTahun() + " | " + 
                            getHargaSewa() + " | " + 
                            getJumlahKursi() + " | " + 
-                           getTipeTransmisi());
+                           getTipeTransmisi() + " | " + 
+                           getStatusSewa());
     }
 
 

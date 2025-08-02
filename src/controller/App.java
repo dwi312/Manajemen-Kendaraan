@@ -1,20 +1,29 @@
 package controller;
 
 import helper.AppHelper;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import model.Mobil;
 import model.Motor;
+import model.Penyewaan;
+import model.StatusSewa;
 import model.User;
 import service.MobilService;
 import service.MotorService;
+import service.PenyewaanService;
 import service.UserService;
 import view.Console;
 import view.UserView;
 
-
 public class App {
+
     private int pilihan;
+    private String getNama;
+    private String getId;
     private boolean exit;
     private Scanner input = new Scanner(System.in);
 
@@ -23,56 +32,74 @@ public class App {
     private UserService user = new UserService();
     private MobilService mobil = new MobilService();
     private MotorService motor = new MotorService();
+    private PenyewaanService penyewaan = new PenyewaanService(mobil, motor, user);
 
 
     public void run() {
         loadData();
         view = new Console(this);
-        viewUser = new UserView();
+        viewUser = new UserView(this);
 
         while (!exit) {
             view.login();
             pilihan = AppHelper.inputInt(input);
             view.auth(pilihan);
             exit = isExit(pilihan);
-            
+
         }
         AppHelper.clearScreen();
         System.out.println("Program Berhenti.");
         input.close();
     }
 
-     public Scanner getScanner() {
+    public Scanner getScanner() {
         return input;
     }
 
     public void masuk() {
-        isAdmin();
+        auth();
+    }
+
+    public String getNamaUser() {
+        return getNama;
+    }
+
+    public String getIdUser() {
+        return getId;
+    }
+
+    public void isAdmin() {
+        while (!exit) {
+            AppHelper.clearScreen();
+            view.menuAdmin();
+            pilihan = AppHelper.inputInt(input);
+            view.menuPilihanAdmin(pilihan);
+            exit = isExit(pilihan);
+        }
+    }
+
+    public void isUser() {
+        while (!exit) {
+            AppHelper.clearScreen();
+            viewUser.menuUser();
+            pilihan = AppHelper.inputInt(input);
+            viewUser.menuPilihanUser(pilihan);
+            exit = isExit(pilihan);
+        }
     }
     
-    private void isAdmin() {
+    private void auth() {
+        String data;
+        
         System.out.print("Masukan ID / Nama: ");
-        String data = AppHelper.inputStr(input);
+        data = AppHelper.inputStr(input);
 
-        if(data.equalsIgnoreCase("admin")) {
-            while (!exit) {
-                AppHelper.clearScreen();
-                view.menuAdmin();
-                pilihan = AppHelper.inputInt(input);
-                view.menuPilihanAdmin(pilihan);
-                exit = isExit(pilihan);
-            }
-        } else if(user.cariData(data) != null) {
-            AppHelper.clearScreen();
-                System.out.println("\n=== APLIKASI PENYEWAAAN KENDARAAN ===");
-                System.out.println("--------------------------------");
-                System.out.println();
-                System.out.println("ID   : " + user.cariData(data).getId());
-                System.out.println("NAMA : " + user.cariData(data).getNama());
-                System.out.println();
-                System.out.println();
-                viewUser.menuUser();
-                pilihan = AppHelper.inputInt(input);
+        if (data.equalsIgnoreCase("admin")) {
+            isAdmin();
+        } else if (user.cariData(data) != null) {
+            getNama = user.cariData(data).getNama();
+            getId = user.cariData(data).getId();
+            isUser();
         } else {
             System.out.println("Data tidak ditemukan.");
             AppHelper.enterToContinue(input);
@@ -81,10 +108,10 @@ public class App {
     }
 
     public boolean isExit(int num) {
-         if(num == 0) {
+        if (num == 0) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -93,12 +120,12 @@ public class App {
         List<User> getDataUser = user.getAllUser();
         int no = 1;
 
-        for(int i = 0; i < getDataUser.size(); i++) {
+        for (int i = 0; i < getDataUser.size(); i++) {
             System.out.printf("%-2s | %-5s | %-30s | %-20s |\n",
-                        no++,
-                        getDataUser.get(i).getId(),
-                        getDataUser.get(i).getNama(),
-                        getDataUser.get(i).getKontak());
+                    no++,
+                    getDataUser.get(i).getId(),
+                    getDataUser.get(i).getNama(),
+                    getDataUser.get(i).getKontak());
         }
         System.out.println("--------------------------------------------------------------------");
         System.out.println();
@@ -106,38 +133,185 @@ public class App {
         pilihan = AppHelper.inputInt(input);
 
         switch (pilihan) {
-            case 1: newUser(); break;
-            case 2: AppHelper.clearScreen(); viewUser.formUpdateUser(); break;
-            case 3: AppHelper.clearScreen(); viewUser.formHapusUser(); break;
-            case 4: break;
-            default: System.out.println("Pilihan tidak valid. Silakan coba lagi"); break;
+            case 1:
+                newUser();
+                break;
+            case 2:
+                AppHelper.clearScreen();
+                viewUser.formUpdateUser();
+                break;
+            case 3:
+                AppHelper.clearScreen();
+                viewUser.formHapusUser();
+                break;
+            case 4:
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
 
         }
     }
 
-    public void listKendaraan() {
+    public void cekUnitDisewa() {
+        List<Penyewaan> getDataSewa = penyewaan.getAllPenyewaan();
+         if(getDataSewa.isEmpty()) {
+            System.out.println("Belum ada data penyewaan.");
+            AppHelper.enterToContinue(input);
+            return;
+        } else {
+            view.listUnitDisewa();
+        }
+    }
+
+    public void listKendaraanDisewa() {
+        List<Penyewaan> getDataSewa = penyewaan.getAllPenyewaan();
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
+       
+        int no = 1;
+        
+        for (int i = 0; i < getDataSewa.size(); i++) {
+            String idSewa = getDataSewa.get(i).getIdSewa();
+            String idUnit = getDataSewa.get(i).getIdKendaraan();
+            String merkUnit;
+            String idUser = getDataSewa.get(i).getIdUser();
+            LocalDate tglSewa = getDataSewa.get(i).getTglSewa();
+            LocalDate tglKembali = getDataSewa.get(i).getTglKembali();
+            double harga;
+            double totalHarga = getDataSewa.get(i).getTotalHarga();
+
+            
+            if(idUnit.startsWith("R4")) {
+                merkUnit = mobil.getMobil(idUnit).getMerk();
+                harga = mobil.getMobil(idUnit).getHargaSewa();
+            } else {
+                merkUnit = motor.getMotor(idUnit).getMerk();
+                harga = motor.getMotor(idUnit).getHargaSewa();
+            }
+
+            long selisihHari = ChronoUnit.DAYS.between(tglSewa, tglKembali);
+            totalHarga = harga * selisihHari;
+    
+            String HargaRupiah = formatRupiah.format(harga);
+            String totalHargaRupiah = formatRupiah.format(totalHarga);
+
+            System.out.printf("| %-2s | %-5s | %-5s | %-10s | %-7s | %-13s | %-13s |\n",
+                     no++,
+                     idSewa,
+                     idUnit,
+                     merkUnit,
+                     idUser,
+                     tglSewa,
+                     tglKembali);
+        }
+        System.out.println("-----------------------------------------------------------------------------");
+        AppHelper.enterToContinue(input);
+    }
+
+    public void pengembalianUnit() {
+        List<Penyewaan> getDataSewa = penyewaan.getAllPenyewaan();
+        int no = 1;
+        
+        String merkUnit;
+        String jenisUnit;
+        double harga;
+
+        for (int i = 0; i < getDataSewa.size(); i++) {
+            // "NO SEWA", "NAMA", "MERK", "JENIS", "HARGA SEWA"
+            String idSewa = getDataSewa.get(i).getIdSewa();
+            String idUnit = getDataSewa.get(i).getIdKendaraan();
+            String idUser = getDataSewa.get(i).getIdUser();
+            String namaUser = user.cariData(idUser).getNama();
+
+            if(idUnit.startsWith("R4")) {
+                merkUnit = mobil.getMobil(idUnit).getMerk();
+                harga = mobil.getMobil(idUnit).getHargaSewa();
+                jenisUnit = "Mobil";
+            } else {
+                merkUnit = motor.getMotor(idUnit).getMerk();
+                harga = motor.getMotor(idUnit).getHargaSewa();
+                jenisUnit = "Motor";
+            }
+
+            NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
+            String HargaSewa = formatRupiah.format(harga);
+
+            System.out.printf("| %-2s | %-7s | %-15s | %-10s | %-10s | %-17s |\n",
+                     no++,
+                     idSewa,
+                     namaUser,
+                     merkUnit,
+                     jenisUnit,
+                     HargaSewa);
+
+        }
+        System.out.println("--------------------------------------------------------------------------------");
+        AppHelper.enterToContinue(input);
+    }
+
+        public void listKendaraan() {
         AppHelper.clearScreen();
         view.menuPilihKendaraan();
         pilihan = AppHelper.inputInt(input);
         view.pilihKendaraan(pilihan);
-        AppHelper.enterToContinue(input);
-        
     }
 
+    public void mobilTersedia() {
+        List<Mobil> getDataMobil = mobil.getAllMobil();
+        int no = 1;
+
+        for (int i = 0; i < getDataMobil.size(); i++) {
+        if (getDataMobil.get(i).getStatusSewa() == StatusSewa.TERSEDIA) {
+            System.out.printf("%-2d | %-5s | %-10s | %-10s | %-10s | %-13s | %-13s |\n",
+                no++,
+                getDataMobil.get(i).getId(),
+                getDataMobil.get(i).getMerk(),
+                getDataMobil.get(i).getTahun(),
+                getDataMobil.get(i).getHargaSewa(),
+                getDataMobil.get(i).getJumlahKursi(),
+                getDataMobil.get(i).getTipeTransmisi());
+        }
+        }
+        System.out.println("-----------------------------------------------------------------------------------");
+        
+        System.out.println("**Pilih nomor 0 untuk membatalkan.");
+        System.out.print("Pilih nomor kendaran yang akan disewa: ");
+        int nm = AppHelper.inputInt(input);
+        
+        if (nm != 0) {
+            System.out.print("Sewa untuk berapa hari ? ");
+            long hari = AppHelper.inputInt(input);
+            AppHelper.clearScreen();
+
+            LocalDate tglKembali = LocalDate.now().plusDays(hari);
+            String idUser = getIdUser();
+            String idKendaraan = mobil.sewaMobil(nm);
+            String merkKendaraan = mobil.getMobil(idKendaraan).getMerk();
+            double hargaSewa = mobil.getMobil(idKendaraan).getHargaSewa();
+            double totalHarga = hargaSewa * hari;
+
+            System.out.println("\n[ Sewa: atas nama " + getNamaUser() + " nama unit "+ merkKendaraan + " untuk " + hari + " hari. ]");
+            System.out.println("\nTotal Harga Sewa: " + totalHarga);
+
+            penyewaan.sewaKendaraan(idUser, idKendaraan, tglKembali,totalHarga);
+            AppHelper.enterToContinue(input);
+        }
+
+    }
 
     public void listMobil() {
         List<Mobil> getDataMobil = mobil.getAllMobil();
         int no = 1;
 
-        for(int i = 0; i < getDataMobil.size(); i++) {
+        for (int i = 0; i < getDataMobil.size(); i++) {
             System.out.printf("%-2d | %-5s | %-10s | %-10s | %-10s | %-13s | %-13s |\n",
-                        no++,
-                        getDataMobil.get(i).getId(),
-                        getDataMobil.get(i).getMerk(),
-                        getDataMobil.get(i).getTahun(),
-                        getDataMobil.get(i).getHargaSewa(),
-                        getDataMobil.get(i).getJumlahKursi(),
-                        getDataMobil.get(i).getTipeTransmisi());
+                    no++,
+                    getDataMobil.get(i).getId(),
+                    getDataMobil.get(i).getMerk(),
+                    getDataMobil.get(i).getTahun(),
+                    getDataMobil.get(i).getHargaSewa(),
+                    getDataMobil.get(i).getJumlahKursi(),
+                    getDataMobil.get(i).getTipeTransmisi());
         }
         System.out.println("-----------------------------------------------------------------------------------");
         System.out.println();
@@ -145,11 +319,22 @@ public class App {
         pilihan = AppHelper.inputInt(input);
 
         switch (pilihan) {
-            case 1: formTambahMobil();  break;
-            case 2: AppHelper.clearScreen(); view.formUpdateUnit(); break;
-            case 3: AppHelper.clearScreen(); view.formHapusUnit(); break;
-            case 4: break;
-            default: System.out.println("Pilihan tidak valid. Silakan coba lagi"); break;
+            case 1:
+                formTambahMobil();
+                break;
+            case 2:
+                AppHelper.clearScreen();
+                view.formUpdateUnit();
+                break;
+            case 3:
+                AppHelper.clearScreen();
+                view.formHapusUnit();
+                break;
+            case 4:
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
 
         }
 
@@ -159,14 +344,14 @@ public class App {
         List<Motor> getDataMotor = motor.getAllMotor();
         int no = 1;
 
-        for(int i = 0; i < getDataMotor.size(); i++) {
+        for (int i = 0; i < getDataMotor.size(); i++) {
             System.out.printf("%-2d | %-5s | %-10s | %-10s | %-10s | %-15s |\n",
-                        no++,
-                        getDataMotor.get(i).getId(),
-                        getDataMotor.get(i).getMerk(),
-                        getDataMotor.get(i).getTahun(),
-                        getDataMotor.get(i).getHargaSewa(),
-                        getDataMotor.get(i).getKapasitasMesin());
+                    no++,
+                    getDataMotor.get(i).getId(),
+                    getDataMotor.get(i).getMerk(),
+                    getDataMotor.get(i).getTahun(),
+                    getDataMotor.get(i).getHargaSewa(),
+                    getDataMotor.get(i).getKapasitasMesin());
         }
         System.out.println("---------------------------------------------------------------------");
         System.out.println();
@@ -174,11 +359,62 @@ public class App {
         pilihan = AppHelper.inputInt(input);
 
         switch (pilihan) {
-            case 1: formTambahMotor();  break;
-            case 2: AppHelper.clearScreen(); view.formUpdateUnit(); break;
-            case 3: AppHelper.clearScreen(); view.formHapusUnit(); break;
-            case 4: break;
-            default: System.out.println("Pilihan tidak valid. Silakan coba lagi"); break;
+            case 1:
+                formTambahMotor();
+                break;
+            case 2:
+                AppHelper.clearScreen();
+                view.formUpdateUnit();
+                break;
+            case 3:
+                AppHelper.clearScreen();
+                view.formHapusUnit();
+                break;
+            case 4:
+                break;
+            default:
+                System.out.println("Pilihan tidak valid. Silakan coba lagi");
+                break;
+        }
+    }
+
+    public void motorTersedia() {
+        List<Motor> getDataMotor = motor.getAllMotor();
+        int no = 1;
+
+        for (int i = 0; i < getDataMotor.size(); i++) {
+            if (getDataMotor.get(i).getStatusSewa() == StatusSewa.TERSEDIA) {
+                System.out.printf("%-2d | %-5s | %-10s | %-10s | %-10s | %-15s |\n",
+                    no++,
+                    getDataMotor.get(i).getId(),
+                    getDataMotor.get(i).getMerk(),
+                    getDataMotor.get(i).getTahun(),
+                    getDataMotor.get(i).getHargaSewa(),
+                    getDataMotor.get(i).getKapasitasMesin());
+            }
+        }
+        System.out.println("---------------------------------------------------------------------");
+        System.out.println("**Pilih nomor 0 untuk membatalkan.");
+        System.out.print("Pilih nomor kendaran yang akan disewa: ");
+        int nm = AppHelper.inputInt(input);
+        
+        if (nm != 0) {
+            System.out.print("Sewa untuk berapa hari ? ");
+            long hari = AppHelper.inputInt(input);
+            AppHelper.clearScreen();
+
+            LocalDate tglKembali = LocalDate.now().plusDays(hari);
+            String idUser = getIdUser();
+            String idKendaraan = motor.sewaMotor(nm);
+            String merkKendaraan = motor.getMotor(idKendaraan).getMerk();
+            double hargaSewa = motor.getMotor(idKendaraan).getHargaSewa();
+            double totalHarga = hargaSewa * hari;
+
+            System.out.println("\n[ Sewa: atas nama " + getNamaUser() + " nama unit "+ merkKendaraan + " untuk " + hari + " hari. ]");
+            System.out.println("\nTotal Harga Sewa: " + totalHarga);
+
+            penyewaan.sewaKendaraan(idUser, idKendaraan, tglKembali,totalHarga);
+            AppHelper.enterToContinue(input);
         }
 
     }
@@ -189,9 +425,9 @@ public class App {
         System.out.print("Cari: ");
         String keyword = AppHelper.inputStr(input);
         System.out.println();
-        if(mobil.cariData(keyword) != null) {
+        if (mobil.cariData(keyword) != null) {
             mobil.cariData(keyword).info();
-        } else if(motor.cariData(keyword) != null) {
+        } else if (motor.cariData(keyword) != null) {
             motor.cariData(keyword).info();
         } else {
             System.out.println("Data tidak ditemukan.");
@@ -199,12 +435,6 @@ public class App {
         AppHelper.enterToContinue(input);
 
     }
-
-    public void kendaraanDiSewa() {}
-
-    public void pengembalianKendaraan() {}
-
-    public void riwayatSewwa() {}
 
     public void newUser() {
         AppHelper.clearScreen();
@@ -217,9 +447,9 @@ public class App {
 
         System.out.print("Masukan Kontak:");
         String kontak = AppHelper.inputStr(input);
-        
+
         String idUser = "";
-        
+
         user.tambahUser(idUser, nama, kontak);
         System.out.println("User Baru berhasil ditambahkan.");
         AppHelper.enterToContinue(input);
@@ -253,25 +483,25 @@ public class App {
         System.out.println("Mobil berhasil ditambahkan.");
         AppHelper.enterToContinue(input);
     }
-    
+
     public void formTambahMotor() {
         AppHelper.clearScreen();
         System.out.println("\n=== TAMBAH UNIT MOTOR ===");
         System.out.println("--------------------------------");
         System.out.println();
-        
+
         System.out.print("Merk Motor: ");
         String merk = AppHelper.inputStr(input);
-        
+
         System.out.print("Tahun Motor: ");
         String tahun = AppHelper.inputStr(input);
-        
+
         System.out.print("Harga Sewa: ");
         double hargaSewa = AppHelper.inputDouble(input);
-        
+
         System.out.print("Kapasitas Mesin: ");
         String kapasitasMesin = AppHelper.inputStr(input);
-        
+
         motor.tambahMotor(merk, tahun, hargaSewa, kapasitasMesin);
         System.out.println("Motor berhasil ditambahkan.");
 
@@ -279,18 +509,17 @@ public class App {
 
     public void updateKendaraan() {
         String id = AppHelper.inputStr(input);
-        
-        if(mobil.cariData(id) != null) {
-           updateMobil(id);
-        } else if(motor.cariData(id) != null) {
+
+        if (mobil.cariData(id) != null) {
+            updateMobil(id);
+        } else if (motor.cariData(id) != null) {
             updateMotor(id);
         } else {
             System.out.println("Data tidak ditemukan.");
         }
         AppHelper.enterToContinue(input);
-        
+
     }
-    
 
     public void updateMotor(String idMotor) {
         AppHelper.clearScreen();
@@ -306,7 +535,7 @@ public class App {
         String tahun = exMotor.getTahun();
         double hargaSewa = exMotor.getHargaSewa();
         String kapasitasMesin = exMotor.getKapasitasMesin();
-        
+
         exMotor.info();
 
         System.out.println("");
@@ -314,20 +543,20 @@ public class App {
         System.out.println("");
         System.out.print("Ganti ID: ");
         String idBaru = input.nextLine();
-        
+
         System.out.print("Ganti Merk: ");
         String merkBaru = input.nextLine();
-        
+
         System.out.print("Ganti Tahun: ");
         String tahunBaru = input.nextLine();
-        
+
         System.out.println("**Masukan 0 jika tidak ingin mengubah.");
         System.out.print("Ganti Harga Sewa: ");
         double hargaSewaBaru = AppHelper.inputDouble(input);
-        
+
         System.out.print("Ganti Kapasitas Mesin: ");
         String kapasitasMesinBaru = input.nextLine();
-        
+
         motor.updateData(id, idBaru, merkBaru, tahunBaru, hargaSewaBaru, kapasitasMesinBaru);
         System.out.println("Data motor berhasil diperbarui.");
     }
@@ -355,17 +584,17 @@ public class App {
         System.out.println("");
         System.out.print("Ganti ID: ");
         String idBaru = input.nextLine();
-        
+
         System.out.print("Ganti Merk: ");
         String merkBaru = input.nextLine();
-        
+
         System.out.print("Ganti Tahun: ");
         String tahunBaru = input.nextLine();
-        
+
         System.out.println("**Masukan 0 jika tidak ingin mengubah.");
         System.out.print("Ganti Harga Sewa: ");
         double hargaSewaBaru = AppHelper.inputDouble(input);
-        
+
         System.out.print("Ganti Jumlah Kursi: ");
         int jumlahKursiBaru = input.nextInt();
 
@@ -382,37 +611,37 @@ public class App {
 
         String konfirmasi;
 
-        if(mobil.cariData(idKendaraan) != null) {
-           exMobil = mobil.cariData(idKendaraan);
-           System.out.print("Data: ");
-           exMobil.info();
-           System.out.println();
-           System.out.println(exMobil.getId() + " - " + exMobil.getMerk() + " akan dihapus? (y/n)" );
-           konfirmasi = AppHelper.inputStr(input);
-           
-           if(konfirmasi.equalsIgnoreCase("y")) {
-               mobil.hapusData(exMobil.getId());
-               System.out.println("Data berhasil dihapus.");
-           } else {
-               System.out.println("Data tidak dihapus.");
-               return;
-           }
-           
-        } else if(motor.cariData(idKendaraan) != null) {
+        if (mobil.cariData(idKendaraan) != null) {
+            exMobil = mobil.cariData(idKendaraan);
+            System.out.print("Data: ");
+            exMobil.info();
+            System.out.println();
+            System.out.println(exMobil.getId() + " - " + exMobil.getMerk() + " akan dihapus? (y/n)");
+            konfirmasi = AppHelper.inputStr(input);
+
+            if (konfirmasi.equalsIgnoreCase("y")) {
+                mobil.hapusData(exMobil.getId());
+                System.out.println("Data berhasil dihapus.");
+            } else {
+                System.out.println("Data tidak dihapus.");
+                return;
+            }
+
+        } else if (motor.cariData(idKendaraan) != null) {
             exMotor = motor.cariData(idKendaraan);
             System.out.print("Data: ");
             exMotor.info();
 
-            System.out.println(exMotor.getId() + " - " + exMotor.getMerk() + " akan dihapus? (y/n)" );
+            System.out.println(exMotor.getId() + " - " + exMotor.getMerk() + " akan dihapus? (y/n)");
             konfirmasi = AppHelper.inputStr(input);
 
-            if(konfirmasi.equalsIgnoreCase("y")) {
-               motor.hapusData(exMotor.getId());
-               System.out.println("Data berhasil dihapus.");
-           } else {
-               System.out.println("Data tidak dihapus.");
-               return;
-           }
+            if (konfirmasi.equalsIgnoreCase("y")) {
+                motor.hapusData(exMotor.getId());
+                System.out.println("Data berhasil dihapus.");
+            } else {
+                System.out.println("Data tidak dihapus.");
+                return;
+            }
 
         } else {
             System.out.println("Data tidak ditemukan.");
@@ -426,16 +655,16 @@ public class App {
 
         String konfirmasi;
 
-        if(user.cariData(idUser) != null) {
+        if (user.cariData(idUser) != null) {
             exUser = user.cariData(idUser);
             System.out.print("Data: ");
-            exUser.toString();
+            System.out.print(exUser.toString());
 
             System.out.println();
-            System.out.println(exUser.getId() + " - " + exUser.getNama() + " akan dihapus? (y/n)" );
+            System.out.println(exUser.getId() + " - " + exUser.getNama() + " akan dihapus? (y/n)");
             konfirmasi = AppHelper.inputStr(input);
 
-            if(konfirmasi.equalsIgnoreCase("y")) {
+            if (konfirmasi.equalsIgnoreCase("y")) {
                 user.hapusData(exUser.getId());
                 System.out.println("Data berhasil dihapus.");
             } else {
@@ -443,20 +672,58 @@ public class App {
                 return;
             }
         } else {
-             System.out.println("Data tidak ditemukan.");
+            System.out.println("Data tidak ditemukan.");
         }
 
         AppHelper.enterToContinue(input);
 
     }
 
+    public void riwayatSewaUser() {
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
+        List<Penyewaan> getDataSewa = penyewaan.getAllPenyewaan();
+        String jenisUnit;
+        String merkUnit;
+        int no = 1;
+
+        for (int i = 0; i < getDataSewa.size(); i++) {
+            String idSewa = getDataSewa.get(i).getIdSewa();
+            String idUnit = getDataSewa.get(i).getIdKendaraan();
+            
+            if(idUnit.startsWith("R4")) {
+                merkUnit = mobil.getMobil(idUnit).getMerk();
+                jenisUnit = "Mobil";
+            } else {
+                merkUnit = motor.getMotor(idUnit).getMerk();
+                jenisUnit = "Motor";
+
+            }
+
+            double totalHarga = getDataSewa.get(i).getTotalHarga();
+
+            String hargaRupiah = formatRupiah.format(totalHarga);
+
+            if (getDataSewa.get(i).getIdUser().equalsIgnoreCase(getIdUser())) {
+                System.out.printf("| %-2s | %-5s | %-10s | %-10s | %-12s | %-15s | %-18s |\n",
+                         no++,
+                         idSewa,
+                         merkUnit,
+                         jenisUnit,
+                         getDataSewa.get(i).getTglSewa(),
+                         getDataSewa.get(i).getTglKembali(),
+                         hargaRupiah);
+            }
+        }
+        System.out.println("----------------------------------------------------------------------------------------------");
+        AppHelper.enterToContinue(input);
+    }
+
     public void loadData() {
         user.initData();
         mobil.initData();
         motor.initData();
+        penyewaan.initData();
 
     }
-
-
 
 }

@@ -4,13 +4,19 @@ import controller.App;
 import helper.AppHelper;
 
 public class UserView {
-    private App app = new App();
+    private App app;
+
+    public UserView(App app) {
+        this.app = app;
+    }
 
     public void menuUser() {
         System.out.println("\n=== APLIKASI PENYEWAAAN KENDARAAN ===");
         System.out.println("--------------------------------");
+        System.out.println("ID   : " + app.getIdUser());
+        System.out.println("Nama : " + app.getNamaUser());
         System.out.println();
-        System.out.println("1. Daftar Sewa Kendaraan");
+        System.out.println("1. Sewa Kendaraan");
         System.out.println("2. Riwayat");
         System.out.println("0. Keluar");
         System.out.println("--------------------------------");
@@ -20,13 +26,10 @@ public class UserView {
     public void menuPilihanUser(int pilihan) {
         switch (pilihan) {
             case 1:
-               
+               app.listKendaraan();
                 break;
             case 2:
-               
-                break;
-            case 3:
-                
+                riwayatSewa();
                 break;
             case 0:
                 app.isExit(pilihan);
@@ -63,5 +66,21 @@ public class UserView {
         String id = AppHelper.inputStr(app.getScanner());
         app.hapusUser(id);
     }
+
+    public void riwayatSewa() {
+        AppHelper.clearScreen();
+        System.out.println("\n=============================          RIWAYAT PENYEWAAN          ============================");
+        System.out.println();
+        System.out.println("ID   : " + app.getIdUser());
+        System.out.println("Nama : " + app.getNamaUser());
+        System.out.println();
+        System.out.println("----------------------------------------------------------------------------------------------");
+        System.out.printf("| %-2s | %-5s | %-10s | %-10s | %-10s | %-10s | %-18s |\n",
+                         "No", "ID", "Merk", "Jenis Unit", "Tanggal Sewa", "Tanggal Kembali", "Total Harga");
+        System.out.println("----------------------------------------------------------------------------------------------");
+        app.riwayatSewaUser();
+    }
+
+    
 
 }
