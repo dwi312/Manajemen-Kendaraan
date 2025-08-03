@@ -231,5 +231,15 @@ public class Console {
         app.pengembalianUnit();
     }
 
+    public void invoice() {
+        AppHelper.clearScreen();
+        System.out.println("\n                           PEMBAYARAN SEWA               ");
+        System.out.println();
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.printf("| %-2s | %-10s | %-10s | %-10s | %-10s | %-17s |\n",
+        "NO SEWA", "NAMA", "MERK", "TGL SEWA", "SELESAI", "DIEKMBALIKAN" );
+        System.out.println("-----------------------------------------------------------------------------------");
+    }
+
 }
 

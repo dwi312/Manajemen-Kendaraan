@@ -211,6 +211,7 @@ public class App {
     public void pengembalianUnit() {
         List<Penyewaan> getDataSewa = penyewaan.getAllPenyewaan();
         int no = 1;
+        int numIndex = 0;
         
         String merkUnit;
         String jenisUnit;
@@ -222,7 +223,8 @@ public class App {
             String idUnit = getDataSewa.get(i).getIdKendaraan();
             String idUser = getDataSewa.get(i).getIdUser();
             String namaUser = user.cariData(idUser).getNama();
-
+            numIndex++;
+            
             if(idUnit.startsWith("R4")) {
                 merkUnit = mobil.getMobil(idUnit).getMerk();
                 harga = mobil.getMobil(idUnit).getHargaSewa();
@@ -246,10 +248,42 @@ public class App {
 
         }
         System.out.println("--------------------------------------------------------------------------------");
+        
+        System.out.println("\n**Pilih nomor 0 untuk membatalkan.");
+        System.out.println("Pilih Nomor Kendaraan yang akan dikembalikan: ");
+        System.out.print("Pilih No: ");
+        int nm = AppHelper.inputInt(input);
+        Penyewaan pengembalian = penyewaan.kembalikanKendaraan(nm);
+
+        view.invoice();
+        
+        if(pengembalian.getIdKendaraan().startsWith("R4")) {
+            harga = mobil.getMobil(pengembalian.getIdKendaraan()).getHargaSewa();
+            merkUnit = mobil.getMobil(pengembalian.getIdKendaraan()).getMerk();
+        } else {
+            harga = motor.getMotor(pengembalian.getIdKendaraan()).getHargaSewa();
+            merkUnit = motor.getMotor(pengembalian.getIdKendaraan()).getMerk();
+        }
+        
+        System.out.printf("| %-7s | %-10s | %-10s | %-10s | %-10s | %-17s |\n",
+                    pengembalian.getIdSewa(),
+                    user.cariData(pengembalian.getIdUser()).getNama(),
+                    merkUnit,
+                    pengembalian.getTglSewa(),
+                    pengembalian.getTglKembali(),
+                    LocalDate.of(2025, 8, 8));
+        System.out.println("-----------------------------------------------------------------------------------");
+        
+        System.out.println();
+        System.out.println("Harga sewa/hari              : ");
+        System.out.println("Total Harga Sewa             : ");
+        System.out.println("Keterlambatan pengembalian   : ");
+        System.out.println("Denda                        : ");
+        System.out.println("\nJumlah yang harus Dibayarkan : ");
         AppHelper.enterToContinue(input);
     }
 
-        public void listKendaraan() {
+    public void listKendaraan() {
         AppHelper.clearScreen();
         view.menuPilihKendaraan();
         pilihan = AppHelper.inputInt(input);

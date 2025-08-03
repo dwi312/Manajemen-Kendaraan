@@ -84,6 +84,46 @@ public class PenyewaanService {
         saveData();
     }
 
+    public Penyewaan kembalikanKendaraan(int index) {
+        int[] indexMap = new int[daftarSewa.size()];
+        int count = 0;
+
+        for (int i = 0; i < daftarSewa.size(); i++) {
+            if(daftarSewa.get(i).getStatusSewa() == StatusSewa.DISEWA) {
+                indexMap[count] = i;
+                count++;
+            }
+        }
+
+        while (true) {
+            if(index >= 1 && index <= count) {
+                int numIndex = indexMap[index - 1];
+                Penyewaan unitSewa = daftarSewa.get(numIndex);
+
+                // double harga;
+                // if(unitSewa.getIdKendaraan().startsWith("R4")) {
+                //     harga = mobilService.getMobil(unitSewa.getIdKendaraan()).getHargaSewa();
+                // } else {
+                //     harga = motorService.getMotor(unitSewa.getIdKendaraan()).getHargaSewa();
+                // }
+
+                // double totalHarga = unitSewa.getTotalHarga();
+                // long lewatHari = ChronoUnit.DAYS.between(unitSewa.getTglKembali(), LocalDate.now());
+                // double denda = lewatHari * harga;
+                // totalHarga = totalHarga+ denda;
+                
+                // unitSewa.setTotalHarga(totalHarga);
+                // unitSewa.setTglKembali(LocalDate.now());
+                // unitSewa.setStatusSewa(StatusSewa.TERSEDIA);
+                return unitSewa;
+            } else {
+                System.out.println("Pilihan tidak valid. Silakan coba lagi.");
+                return null;
+            }
+        }
+
+    }
+
     public void bacaData(String in) {
         daftarSewa.clear();
 
