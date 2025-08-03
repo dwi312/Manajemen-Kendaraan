@@ -274,12 +274,17 @@ public class App {
                     LocalDate.of(2025, 8, 8));
         System.out.println("-----------------------------------------------------------------------------------");
         
+        long telat = (LocalDate.of(2025, 8, 8).getDayOfMonth() - pengembalian.getTglKembali().getDayOfMonth());
+        double denda = harga * telat;
+
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
+        
         System.out.println();
-        System.out.println("Harga sewa/hari              : ");
-        System.out.println("Total Harga Sewa             : ");
-        System.out.println("Keterlambatan pengembalian   : ");
-        System.out.println("Denda                        : ");
-        System.out.println("\nJumlah yang harus Dibayarkan : ");
+        System.out.println("Harga sewa/hari              : " + formatRupiah.format(harga));
+        System.out.println("Total Harga Sewa             : " + formatRupiah.format(pengembalian.getTotalHarga()));
+        System.out.println("Keterlambatan pengembalian   : " + telat + " hari");
+        System.out.println("Denda                        : " + formatRupiah.format(denda));
+        System.out.println("\nJumlah yang harus Dibayarkan : " + formatRupiah.format(pengembalian.getTotalHarga() + denda) );
         AppHelper.enterToContinue(input);
     }
 

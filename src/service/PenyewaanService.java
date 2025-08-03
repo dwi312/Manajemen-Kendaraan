@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import model.Penyewaan;
@@ -119,6 +120,14 @@ public class PenyewaanService {
             } else {
                 System.out.println("Pilihan tidak valid. Silakan coba lagi.");
                 return null;
+            }
+        }
+
+    }
+    public void getKeterlambatan() {
+        for (int i = 0; i < daftarSewa.size(); i++) {
+            if (daftarSewa.get(i).getStatusSewa() == StatusSewa.DISEWA) {
+                long lewatHari = ChronoUnit.DAYS.between(daftarSewa.get(i).getTglKembali(), LocalDate.now());
             }
         }
 
