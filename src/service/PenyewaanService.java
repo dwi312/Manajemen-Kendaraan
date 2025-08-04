@@ -80,42 +80,28 @@ public class PenyewaanService {
     public void sewaKendaraan(String idUser, String idKendaraan, LocalDate tglKembali, double totalHarga) {
         String idSewa = generateNewID();
         LocalDate tglSewa = LocalDate.now();
-        StatusSewa statusSewa = StatusSewa.DISEWA;
+        StatusSewa statusSewa = StatusSewa.AKTIF;
         daftarSewa.add(new Penyewaan(idSewa, idUser, idKendaraan, tglSewa, tglKembali, totalHarga, statusSewa));
         saveData();
     }
 
     public Penyewaan kembalikanKendaraan(int index) {
         int[] indexMap = new int[daftarSewa.size()];
-        int count = 0;
+        int count = 1;
 
         for (int i = 0; i < daftarSewa.size(); i++) {
-            if(daftarSewa.get(i).getStatusSewa() == StatusSewa.DISEWA) {
+            if(daftarSewa.get(i).getStatusSewa() == StatusSewa.AKTIF) {
                 indexMap[count] = i;
                 count++;
             }
         }
 
         while (true) {
+            
             if(index >= 1 && index <= count) {
                 int numIndex = indexMap[index - 1];
                 Penyewaan unitSewa = daftarSewa.get(numIndex);
-
-                // double harga;
-                // if(unitSewa.getIdKendaraan().startsWith("R4")) {
-                //     harga = mobilService.getMobil(unitSewa.getIdKendaraan()).getHargaSewa();
-                // } else {
-                //     harga = motorService.getMotor(unitSewa.getIdKendaraan()).getHargaSewa();
-                // }
-
-                // double totalHarga = unitSewa.getTotalHarga();
-                // long lewatHari = ChronoUnit.DAYS.between(unitSewa.getTglKembali(), LocalDate.now());
-                // double denda = lewatHari * harga;
-                // totalHarga = totalHarga+ denda;
                 
-                // unitSewa.setTotalHarga(totalHarga);
-                // unitSewa.setTglKembali(LocalDate.now());
-                // unitSewa.setStatusSewa(StatusSewa.TERSEDIA);
                 return unitSewa;
             } else {
                 System.out.println("Pilihan tidak valid. Silakan coba lagi.");
@@ -124,6 +110,23 @@ public class PenyewaanService {
         }
 
     }
+
+    public void sts(String id) {
+        Penyewaan unitSewa = getPenyewaan(id);
+        unitSewa.setStatusSewa(StatusSewa.NONAKTIF);
+
+        if (unitSewa.getIdKendaraan() != null && unitSewa.getIdKendaraan().startsWith("R4")) {
+            mobilService.getMobil(unitSewa.getIdKendaraan()).setStatusSewa(StatusSewa.TERSEDIA);
+            System.out.println("Mobil: " +  mobilService.getMobil(unitSewa.getIdKendaraan()).getStatusSewa());
+            mobilService.saveData();
+        } else if (unitSewa.getIdKendaraan() != null && unitSewa.getIdKendaraan().startsWith("R2")) {
+            motorService.getMotor(unitSewa.getIdKendaraan()).setStatusSewa(StatusSewa.TERSEDIA);
+            System.out.println("Motor: " +  motorService.getMotor(unitSewa.getIdKendaraan()).getStatusSewa());
+            motorService.saveData();
+        }
+        saveData();
+    }
+
     public void getKeterlambatan() {
         for (int i = 0; i < daftarSewa.size(); i++) {
             if (daftarSewa.get(i).getStatusSewa() == StatusSewa.DISEWA) {

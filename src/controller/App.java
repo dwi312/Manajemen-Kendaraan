@@ -21,11 +21,11 @@ import view.UserView;
 
 public class App {
 
-    private int pilihan;
+    private Scanner input;
     private String getNama;
     private String getId;
+    private int pilihan;
     private boolean exit;
-    private Scanner input = new Scanner(System.in);
 
     private Console view;
     private UserView viewUser;
@@ -39,6 +39,7 @@ public class App {
         loadData();
         view = new Console(this);
         viewUser = new UserView(this);
+        input = new Scanner(System.in);
 
         while (!exit) {
             view.login();
@@ -153,15 +154,33 @@ public class App {
         }
     }
 
-    public void cekUnitDisewa() {
+    public void riwayatPenyewaaan() {
         List<Penyewaan> getDataSewa = penyewaan.getAllPenyewaan();
-         if(getDataSewa.isEmpty()) {
-            System.out.println("Belum ada data penyewaan.");
-            AppHelper.enterToContinue(input);
-            return;
-        } else {
-            view.listUnitDisewa();
+        int no = 1;
+        AppHelper.clearScreen();
+        view.riwayatSewa();
+
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
+        double totalHarga;
+
+        for (int i = 0; i < getDataSewa.size(); i++) {
+            totalHarga = getDataSewa.get(i).getTotalHarga();
+            String hargaRupiah = formatRupiah.format(totalHarga);
+
+            System.out.printf("| %-2s | %-7s | %-7s | %-7s | %-12s | %-12s | %-15s | %-8s |\n",
+                    no++,
+                    getDataSewa.get(i).getIdSewa(),
+                    getDataSewa.get(i).getIdKendaraan(),
+                    getDataSewa.get(i).getIdUser(),
+                    getDataSewa.get(i).getTglSewa(),
+                    getDataSewa.get(i).getTglKembali(),
+                    hargaRupiah,
+                    getDataSewa.get(i).getStatusSewa());
+            
         }
+        System.out.println("-----------------------------------------------------------------------------------------------");
+
+        AppHelper.enterToContinue(input);
     }
 
     public void listKendaraanDisewa() {
@@ -169,40 +188,45 @@ public class App {
         NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
        
         int no = 1;
+
+        view.listUnitDisewa();
         
         for (int i = 0; i < getDataSewa.size(); i++) {
-            String idSewa = getDataSewa.get(i).getIdSewa();
-            String idUnit = getDataSewa.get(i).getIdKendaraan();
-            String merkUnit;
-            String idUser = getDataSewa.get(i).getIdUser();
-            LocalDate tglSewa = getDataSewa.get(i).getTglSewa();
-            LocalDate tglKembali = getDataSewa.get(i).getTglKembali();
-            double harga;
-            double totalHarga = getDataSewa.get(i).getTotalHarga();
+            if(getDataSewa.get(i).getStatusSewa() == StatusSewa.AKTIF) {
 
-            
-            if(idUnit.startsWith("R4")) {
-                merkUnit = mobil.getMobil(idUnit).getMerk();
-                harga = mobil.getMobil(idUnit).getHargaSewa();
-            } else {
-                merkUnit = motor.getMotor(idUnit).getMerk();
-                harga = motor.getMotor(idUnit).getHargaSewa();
-            }
-
-            long selisihHari = ChronoUnit.DAYS.between(tglSewa, tglKembali);
-            totalHarga = harga * selisihHari;
+                String idSewa = getDataSewa.get(i).getIdSewa();
+                String idUnit = getDataSewa.get(i).getIdKendaraan();
+                String merkUnit;
+                String idUser = getDataSewa.get(i).getIdUser();
+                LocalDate tglSewa = getDataSewa.get(i).getTglSewa();
+                LocalDate tglKembali = getDataSewa.get(i).getTglKembali();
+                double harga;
+                double totalHarga = getDataSewa.get(i).getTotalHarga();
     
-            String HargaRupiah = formatRupiah.format(harga);
-            String totalHargaRupiah = formatRupiah.format(totalHarga);
-
-            System.out.printf("| %-2s | %-5s | %-5s | %-10s | %-7s | %-13s | %-13s |\n",
-                     no++,
-                     idSewa,
-                     idUnit,
-                     merkUnit,
-                     idUser,
-                     tglSewa,
-                     tglKembali);
+                
+                if(idUnit.startsWith("R4")) {
+                    merkUnit = mobil.getMobil(idUnit).getMerk();
+                    harga = mobil.getMobil(idUnit).getHargaSewa();
+                } else {
+                    merkUnit = motor.getMotor(idUnit).getMerk();
+                    harga = motor.getMotor(idUnit).getHargaSewa();
+                }
+    
+                long selisihHari = ChronoUnit.DAYS.between(tglSewa, tglKembali);
+                totalHarga = harga * selisihHari;
+        
+                String HargaRupiah = formatRupiah.format(harga);
+                String totalHargaRupiah = formatRupiah.format(totalHarga);
+    
+                System.out.printf("| %-2s | %-5s | %-5s | %-10s | %-7s | %-13s | %-13s |\n",
+                         no++,
+                         idSewa,
+                         idUnit,
+                         merkUnit,
+                         idUser,
+                         tglSewa,
+                         tglKembali);
+            }
         }
         System.out.println("-----------------------------------------------------------------------------");
         AppHelper.enterToContinue(input);
@@ -211,51 +235,65 @@ public class App {
     public void pengembalianUnit() {
         List<Penyewaan> getDataSewa = penyewaan.getAllPenyewaan();
         int no = 1;
-        int numIndex = 0;
         
         String merkUnit;
         String jenisUnit;
         double harga;
 
+        if(getDataSewa.isEmpty()) {
+            System.out.println("\nSemua kendaraan masih tersedia.");
+            AppHelper.enterToContinue(input);
+            return;
+        }
+
+        view.pengembalian();
+
         for (int i = 0; i < getDataSewa.size(); i++) {
-            // "NO SEWA", "NAMA", "MERK", "JENIS", "HARGA SEWA"
-            String idSewa = getDataSewa.get(i).getIdSewa();
-            String idUnit = getDataSewa.get(i).getIdKendaraan();
-            String idUser = getDataSewa.get(i).getIdUser();
-            String namaUser = user.cariData(idUser).getNama();
-            numIndex++;
+            if(getDataSewa.get(i).getStatusSewa() == StatusSewa.AKTIF) {
+
+                String idSewa = getDataSewa.get(i).getIdSewa();
+                String idUnit = getDataSewa.get(i).getIdKendaraan();
+                String idUser = getDataSewa.get(i).getIdUser();
+                String namaUser = user.cariData(idUser).getNama();
             
-            if(idUnit.startsWith("R4")) {
-                merkUnit = mobil.getMobil(idUnit).getMerk();
-                harga = mobil.getMobil(idUnit).getHargaSewa();
-                jenisUnit = "Mobil";
-            } else {
-                merkUnit = motor.getMotor(idUnit).getMerk();
-                harga = motor.getMotor(idUnit).getHargaSewa();
-                jenisUnit = "Motor";
+                if(idUnit.startsWith("R4")) {
+                    merkUnit = mobil.getMobil(idUnit).getMerk();
+                    harga = mobil.getMobil(idUnit).getHargaSewa();
+                    jenisUnit = "Mobil";
+                } else {
+                    merkUnit = motor.getMotor(idUnit).getMerk();
+                    harga = motor.getMotor(idUnit).getHargaSewa();
+                    jenisUnit = "Motor";
+                }
+                
+                NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
+                String HargaSewa = formatRupiah.format(harga);
+                
+                System.out.printf("| %-2s | %-7s | %-15s | %-10s | %-10s | %-17s |\n",
+                        no++,
+                        idSewa,
+                        namaUser,
+                        merkUnit,
+                        jenisUnit,
+                        HargaSewa);
+                        
             }
-
-            NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
-            String HargaSewa = formatRupiah.format(harga);
-
-            System.out.printf("| %-2s | %-7s | %-15s | %-10s | %-10s | %-17s |\n",
-                     no++,
-                     idSewa,
-                     namaUser,
-                     merkUnit,
-                     jenisUnit,
-                     HargaSewa);
-
         }
         System.out.println("--------------------------------------------------------------------------------");
         
-        System.out.println("\n**Pilih nomor 0 untuk membatalkan.");
-        System.out.println("Pilih Nomor Kendaraan yang akan dikembalikan: ");
+        System.out.println("\n**Pilih nomor 0 untuk kembali...");
+        System.out.println("\nPilih Nomor Kendaraan yang akan dikembalikan: ");
         System.out.print("Pilih No: ");
         int nm = AppHelper.inputInt(input);
         Penyewaan pengembalian = penyewaan.kembalikanKendaraan(nm);
 
+        System.out.println(pengembalian.getIdKendaraan());
+
         view.invoice();
+
+        if(nm == 0) {
+            return;
+        }
         
         if(pengembalian.getIdKendaraan().startsWith("R4")) {
             harga = mobil.getMobil(pengembalian.getIdKendaraan()).getHargaSewa();
@@ -285,7 +323,38 @@ public class App {
         System.out.println("Keterlambatan pengembalian   : " + telat + " hari");
         System.out.println("Denda                        : " + formatRupiah.format(denda));
         System.out.println("\nJumlah yang harus Dibayarkan : " + formatRupiah.format(pengembalian.getTotalHarga() + denda) );
+        System.out.println("\nLanjut ke Pembayaran.. ");
+        input.nextLine();
+        AppHelper.clearScreen();
+        System.out.println("\n      Pembayaran          ");
+        System.out.println("1. Cash ");
+        System.out.println("2. Transfer");
+        System.out.println("3. Batalkan");
+        System.out.println("\nPilih Pembayaran: ");
+
+        int bayar = AppHelper.inputInt(input);
+        switch (bayar) {
+            case 1:
+                System.out.println("Pembayaran berhasil.");
+                break;
+            case 2:
+                System.out.println("Pembayaran berhasil.");
+                break;
+            case 3:
+                System.out.println("Pembayaran dibatalkan.");
+                break;
+            default:
+                System.out.println("Pilihan tidak valid.");
+                break;
+        }
+
+        if(bayar != 3 ) {
+            pengembalian.setTotalHarga(pengembalian.getTotalHarga() + denda);
+            pengembalian.setTglKembali(LocalDate.of(2025, 8, 8));
+            penyewaan.sts(pengembalian.getIdSewa());
+        }
         AppHelper.enterToContinue(input);
+                
     }
 
     public void listKendaraan() {

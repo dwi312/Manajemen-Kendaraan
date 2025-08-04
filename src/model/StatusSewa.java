@@ -1,6 +1,8 @@
 package model;
 
 public enum  StatusSewa {
+    AKTIF("Aktif"),
+    NONAKTIF("NonAktif"),
     TERSEDIA("Tersedia"),
     DISEWA("Disewa");
 

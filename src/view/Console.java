@@ -153,13 +153,13 @@ public class Console {
                 app.listUser();
                 break;
             case 3:
-                app.cekUnitDisewa();
+                app.listKendaraanDisewa();
                 break;
             case 4:
-                pengembalian();
+                app.pengembalianUnit();
                 break;
             case 5:
-                
+                app.riwayatPenyewaaan();
                 break;
             case 0:
                 app.isExit(pilihan);
@@ -189,6 +189,16 @@ public class Console {
                          "No", "ID", "Merk", "Tahun", "Harga Sewa", "Jumlah Kursi", "Transmisi");
         System.out.println("-----------------------------------------------------------------------------------");
     }
+    
+    public void riwayatSewa() {
+        AppHelper.clearScreen();
+        System.out.println("====================                    RIYAT PENYEWAAN                    ====================");
+        System.out.println();
+        System.out.println("-----------------------------------------------------------------------------------------------");
+        System.out.printf("| %-2s | %-5s | %-5s | %-5s | %-12s | %-12s | %-15s | %-8s |\n",
+        "No", "ID SEWA", "ID UNIT", "ID USER", "TGL SEWA", "TGL KEMBALI", "PEMBAYARAN", "STATUS");
+        System.out.println("-----------------------------------------------------------------------------------------------");
+    }
 
     public void listDataMotor() {
         AppHelper.clearScreen();
@@ -208,7 +218,6 @@ public class Console {
         System.out.printf("| %-2s | %-5s | %-5s | %-10s | %-5s | %-13s | %-13s |\n",
         "No", "TRX", "UNIT", "MERK", "ID USER", "TGL SEWA", "TGL KEMBALI");
         System.out.println("-----------------------------------------------------------------------------");
-        app.listKendaraanDisewa();
     }
 
     public void pilhanData() {
@@ -228,7 +237,7 @@ public class Console {
         System.out.printf("| %-2s | %-2s | %-15s | %-10s | %-10s | %-17s |\n",
         "NO", "NO SEWA", "NAMA", "MERK", "JENIS", "HARGA SEWA");
         System.out.println("--------------------------------------------------------------------------------");
-        app.pengembalianUnit();
+        
     }
 
     public void invoice() {
